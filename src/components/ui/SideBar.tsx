@@ -101,7 +101,7 @@ export default function Sidebar({
     <aside
       className={`
         relative flex flex-col h-screen
-        bg-[#0e0e13] border-r border-white/6
+        bg-[#2a2a2f] border-r border-white/10
         transition-all duration-300 ease-in-out
         ${collapsed ? "w-17" : "w-55"}
       `}
@@ -110,7 +110,7 @@ export default function Sidebar({
       <button
         onClick={() => setCollapsed((c) => !c)}
         className="absolute -right-3 top-4 z-10 w-6 h-6 rounded-full
-          bg-[#1a1a24] border border-white/10 flex items-center justify-center
+          bg-[#3a3a3f] border border-white/15 flex items-center justify-center
           text-white/50 hover:text-white hover:border-white/20
           transition-all duration-200 shadow-md"
         aria-label={collapsed ? "사이드바 펼치기" : "사이드바 접기"}
