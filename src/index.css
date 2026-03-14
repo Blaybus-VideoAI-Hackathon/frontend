@@ -17,7 +17,31 @@
   --heading: system-ui, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
+  --color-primary-100: #fbfafe;
+  --color-primary-200: #cfcdf9;
+  --color-primary-300: #a49ff4;
+  --color-primary-400: #7972ee;
+  --color-primary-500: #4f46e9;
+  --color-primary-600: #251bdf;
+  --color-primary-700: #1e15b2;
+  --color-primary-800: #161084;
+  --color-primary-900: #0f0a57;
+  --color-primary-1000: #070529;
+
+  --color-white: #ffffff;
+  --color-gray-100: #ededed;
+  --color-gray-200: #d4d4d4;
+  --color-gray-300: #bababa;
+  --color-gray-400: #a1a1a1;
+  --color-gray-500: #878787;
+  --color-gray-600: #6e6e6e;
+  --color-gray-700: #545454;
+  --color-gray-800: #3c3c3c;
+  --color-gray-900: #212121;
+  --color-gray-1000: #080808;
+  --color-black: #111111;
+
+  /* font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
@@ -25,11 +49,11 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale; */
 
-  @media (max-width: 1024px) {
+  /* @media (max-width: 1024px) {
     font-size: 16px;
-  }
+  } */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -47,21 +71,21 @@
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
   }
 
-  #social .button-icon {
+  /* #social .button-icon {
     filter: invert(1) brightness(2);
-  }
+  } */
 }
 
 #root {
-  width: 100%;
+  /* width: 100%;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  box-sizing: border-box; */
 }
 
 body {
-  margin: 0;
+  /* margin: 0; */
 }
 
 h1,
