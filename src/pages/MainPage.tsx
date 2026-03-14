@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Button from "../components/ui/Button";
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -15,12 +16,9 @@ export default function MainPage() {
 
       <div className="w-full max-w-240 aspect-video bg-gray-600 rounded-sm mb-10" />
 
-      <button
-        onClick={handleCreate}
-        className="bg-indigo-500 hover:bg-indigo-600 active:scale-95 transition-all text-white text-base font-medium px-8 py-3 rounded-md"
-      >
+      <Button onClick={handleCreate} size="lg">
         프로젝트 생성하기
-      </button>
+      </Button>
     </div>
   );
 }
