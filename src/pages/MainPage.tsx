@@ -1,11 +1,12 @@
-import { useNavigate } from "react-router-dom";
 import Button from "../components/ui/Button";
+import { useModalStore } from "../store/ModalStore";
+import ProjectCreateModal from "../components/ui/modals/ProjectCreateModal";
 
 export default function MainPage() {
-  const navigate = useNavigate();
+  const { open } = useModalStore();
 
   const handleCreate = () => {
-    navigate("/projects/new");
+    open(<ProjectCreateModal />);
   };
 
   return (

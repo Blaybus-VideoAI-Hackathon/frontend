@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/ui/SideBar";
+import Modal from "./components/ui/Modal";
 import MainPage from "./pages/MainPage";
 import CreateProjectPage from "./pages/CreateProjectPage";
 
@@ -18,6 +19,7 @@ function App() {
           </Routes>
         </main>
       </div>
+      <Modal />
     </BrowserRouter>
   );
 }
