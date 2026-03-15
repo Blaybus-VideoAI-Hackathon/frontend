@@ -11,7 +11,7 @@ export default function Modal() {
       onClick={close} // 배경 클릭 시 닫기
     >
       <div
-        className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl"
+        className="bg-[#2a2a2f] rounded-2xl p-6 w-full max-w-md shadow-xl"
         onClick={(e) => e.stopPropagation()} // 내부 클릭 버블링 차단
       >
         {content}
