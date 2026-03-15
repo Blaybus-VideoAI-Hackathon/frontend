@@ -1,12 +1,10 @@
-import { useState } from "react";
 import StoryIcon from "../../assets/icons/story.svg?react";
 import CutIcon from "../../assets/icons/cut.svg?react";
 import ImageIcon from "../../assets/icons/image.svg?react";
 import VideoIcon from "../../assets/icons/video.svg?react";
 import FinishIcon from "../../assets/icons/finish.svg?react";
 import Line from "../../assets/line.svg";
-
-type TabId = "story" | "cut" | "image" | "video" | "finish";
+import type { TabId } from "../../constants/step";
 
 const TABS: {
   id: TabId;
@@ -21,41 +19,31 @@ const TABS: {
 ];
 
 type StepTabsProps = {
-  defaultTab?: TabId;
-  onChange?: (tab: TabId) => void;
+  activeTab: TabId;
 };
 
-export default function StepTabs({
-  defaultTab = "story",
-  onChange,
-}: StepTabsProps) {
-  const [activeTab, setActiveTab] = useState<TabId>(defaultTab);
-
-  const handleClick = (id: TabId) => {
-    setActiveTab(id);
-    onChange?.(id);
-  };
-
+export default function StepTabs({ activeTab }: StepTabsProps) {
   return (
     <div className="flex items-center gap-2 w-full">
       {TABS.map((tab, index) => {
         const isActive = activeTab === tab.id;
         return (
-          <div key={tab.id} className="flex items-center gap-2 flex-1">
-            <button
-              onClick={() => handleClick(tab.id)}
-              className={`flex flex-1 items-center justify-center gap-2 px-6 py-5 rounded-lg border transition-colors cursor-pointer ${
+          <div key={tab.id} className="flex flex-1 items-center gap-2">
+            <div
+              aria-current={isActive ? "step" : undefined}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-lg border px-6 py-5 transition-colors ${
                 isActive
-                  ? "bg-[rgba(79,70,233,0.4)] border-[#251bdf] text-[#a49ff4]"
-                  : "bg-[rgba(135,135,135,0.1)] border-[#3c3c3c] text-[#3c3c3c] hover:bg-[rgba(135,135,135,0.15)]"
+                  ? "border-[#251bdf] bg-[rgba(79,70,233,0.4)] text-[#a49ff4]"
+                  : "border-[#3c3c3c] bg-[rgba(135,135,135,0.1)] text-[#3c3c3c]"
               }`}
             >
               <tab.Icon className="size-6 shrink-0" />
-              <span className="font-bold text-lg whitespace-nowrap">
+              <span className="whitespace-nowrap text-lg font-bold">
                 {tab.label}
               </span>
-            </button>
-            {index < TABS.length - 1 && <img src={Line} />}
+            </div>
+
+            {index < TABS.length - 1 && <img src={Line} alt="" />}
           </div>
         );
       })}
