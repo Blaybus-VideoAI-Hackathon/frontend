@@ -5,7 +5,7 @@ export default function MainPage() {
   const navigate = useNavigate();
 
   const handleCreate = () => {
-    navigate("/new");
+    navigate("/projects/new");
   };
 
   return (

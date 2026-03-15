@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/ui/SideBar";
 import MainPage from "./pages/MainPage";
+import CreateProjectPage from "./pages/CreateProjectPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <main className="flex-1 overflow-auto">
           <Routes>
             <Route path="/" element={<MainPage />} />
+            <Route path="/projects/new" element={<CreateProjectPage />} />
           </Routes>
         </main>
       </div>

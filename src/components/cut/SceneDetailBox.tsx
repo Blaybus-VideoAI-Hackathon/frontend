@@ -1,25 +1,12 @@
 import SceneLabel from "./SceneLabel";
-
-type SceneDetailItem = {
-  label: string;
-  value: string;
-};
+import type { SceneDetailItem } from "./SceneListBox";
 
 type SceneDetailBoxProps = {
   sceneNumber: number;
   title: string;
-  details?: SceneDetailItem[];
+  details: SceneDetailItem[];
   onRegenerateScene?: () => void;
 };
-
-const defaultDetails: SceneDetailItem[] = [
-  { label: "행동", value: "아카이누가 용암주먹 날림" },
-  { label: "포즈", value: "역동적으로 돌진하는 자세" },
-  { label: "구도", value: "측면 클로즈업" },
-  { label: "조명", value: "붉고 강렬한 역광" },
-  { label: "무드", value: "폭발 직전의 팽팽한 긴장감" },
-  { label: "시간", value: "노을이 지는 붉은 저녁" },
-];
 
 function DetailRow({ label, value }: SceneDetailItem) {
   return (
@@ -35,7 +22,7 @@ function DetailRow({ label, value }: SceneDetailItem) {
 export default function SceneDetailBox({
   sceneNumber,
   title,
-  details = defaultDetails,
+  details,
   onRegenerateScene,
 }: SceneDetailBoxProps) {
   return (
