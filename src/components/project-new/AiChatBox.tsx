@@ -16,7 +16,7 @@ const initialMessages: AiChatMessage[] = [
 function UserRequestBubble({ text }: { text: string }) {
   return (
     <div className="w-full rounded-[24px] rounded-br-[0px] border border-[#5C4DFF] bg-[rgba(92,77,255,0.42)] px-6 py-5">
-      <p className="text-[22px] font-semibold leading-[1.4] text-white">
+      <p className="text-[15px] font-semibold leading-[1.4] text-white">
         {text}
       </p>
     </div>
@@ -37,7 +37,7 @@ export default function AiChatBox() {
   };
 
   return (
-    <section className="flex min-h-[760px] w-full flex-col rounded-[8px] bg-gray-900 p-6">
+    <section className="flex h-full min-h-0 w-full flex-col rounded-[8px] bg-gray-900 p-6">
       <div className="mb-8 text-gray-100 text-[18px] font-bold">
         AI 수정하기
       </div>

@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import type { SceneItem } from "./SceneListBox";
 import SceneListBox from "./SceneListBox";
 import SceneDetailBox from "./SceneDetailBox";
-import AiChatBox from "../project-new/AiChatBox";
 
 const initialScenes: SceneItem[] = [
   {
@@ -111,7 +110,7 @@ export default function CutStage() {
   if (!selectedScene) return null;
 
   return (
-    <section className="grid grid-cols-1 gap-4 md:grid-cols-[500px_minmax(0,1fr)_450px]">
+    <section className="grid items-stretch grid-cols-1 gap-4 md:grid-cols-[450px_minmax(0,1fr)]">
       <SceneListBox
         scenes={scenes}
         selectedSceneId={selectedSceneId}
@@ -128,8 +127,6 @@ export default function CutStage() {
           console.log("선택된 Scene만 다시 추천");
         }}
       />
-
-      <AiChatBox />
     </section>
   );
 }
