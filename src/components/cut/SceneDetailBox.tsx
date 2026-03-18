@@ -26,7 +26,7 @@ export default function SceneDetailBox({
   onRegenerateScene,
 }: SceneDetailBoxProps) {
   return (
-    <section className="flex min-h-[760px] w-full flex-col rounded-[8px] bg-gray-900 px-7 py-6">
+    <section className="flex h-full w-full flex-col rounded-[8px] bg-gray-900 px-7 py-6">
       <div className="flex items-center gap-4">
         <SceneLabel sceneNumber={sceneNumber} selected />
         <div className="text-gray-100 text-[18px] font-bold">{title}</div>

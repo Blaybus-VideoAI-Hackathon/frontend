@@ -15,7 +15,7 @@ const TABS: {
   { id: "cut", label: "컷 설계", Icon: CutIcon },
   { id: "image", label: "이미지 생성", Icon: ImageIcon },
   { id: "video", label: "동영상 생성", Icon: VideoIcon },
-  { id: "finish", label: "최종 완성", Icon: FinishIcon },
+  { id: "finish", label: "동영상 병합", Icon: FinishIcon },
 ];
 
 type StepTabsProps = {

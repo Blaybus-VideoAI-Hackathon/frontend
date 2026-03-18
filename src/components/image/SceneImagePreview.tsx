@@ -1,40 +1,29 @@
 import SceneLabel from "../cut/SceneLabel";
 
-type SelectedSceneImagePreviewProps = {
+type SceneImagePreviewProps = {
   sceneNumber: number;
   title: string;
   imageSrc: string;
-  onEdit?: () => void;
 };
 
-export default function SelectedSceneImagePreview({
+export default function SceneImagePreview({
   sceneNumber,
   title,
   imageSrc,
-  onEdit,
-}: SelectedSceneImagePreviewProps) {
+}: SceneImagePreviewProps) {
   return (
-    <section className="w-full rounded-[14px] bg-[#1B1B1F] p-6 shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
+    <section className="self-start w-full rounded-[8px] bg-gray-900 p-6">
       <div className="mb-6 flex items-center gap-4">
         <SceneLabel sceneNumber={sceneNumber} selected />
-        <h2 className="text-[20px] font-bold text-white md:text-[24px]">
-          {title}
-        </h2>
+        <div className="text-[25px] font-bold text-white">{title}</div>
       </div>
 
-      <div className="relative overflow-hidden rounded-[12px] bg-black/20">
+      <div className="relative overflow-hidden">
         <img
           src={imageSrc}
           alt={`${title} 대표 이미지`}
-          className="h-auto w-full rounded-[12px] object-cover"
+          className="block h-auto w-full rounded-[8px] object-cover"
         />
-
-        <button
-          type="button"
-          onClick={onEdit}
-          className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(20,20,24,0.85)] transition hover:bg-[rgba(35,35,40,0.95)]"
-          aria-label="이미지 수정"
-        ></button>
       </div>
     </section>
   );

@@ -23,7 +23,7 @@ export default function SceneImageListBox({
   onEditScene,
 }: SceneImageListBoxProps) {
   return (
-    <section className="w-full rounded-[8px] bg-gray-900 px-5 py-5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
+    <section className="w-full rounded-[8px] bg-gray-900 p-5">
       <div className="mb-5 text-[18px] font-bold leading-none text-white">
         컷 구성 (스토리 흐름)
       </div>
