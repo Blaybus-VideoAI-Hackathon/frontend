@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import StepTabs from "../components/project-new/StepTabs";
 import ProjectCoreToggle from "../components/project-new/ProjectCoreToggle";
 import StepNavigation from "../components/project-new/StepNavigation";
+import StoryStage from "../components/story/StoryStage";
 import { STEP_ORDER, type TabId } from "../constants/step";
 import ImageStage from "../components/image/ImageStage";
 import CutStage from "../components/cut/CutStage";
@@ -47,11 +48,9 @@ export default function CreateProjectPage() {
   const renderStageContent = () => {
     switch (activeStep) {
       case "story":
-        return (
-          <section className="rounded-[16px] bg-[#17181C] p-6 text-white">
-            <div className="text-2xl font-bold">스토리 기획 단계</div>
-          </section>
-        );
+        return <StoryStage />;
+      case "cut":
+        return <CutStage />;
       case "image":
         return (
           <ImageStage

@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/ui/SideBar";
+import Modal from "./components/ui/Modal";
 import MainPage from "./pages/MainPage";
 import CreateProjectPage from "./pages/CreateProjectPage";
+import VideoCompletePage from "./pages/VideoCompletePage";
 
 function App() {
   return (
@@ -15,9 +17,11 @@ function App() {
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/projects/new" element={<CreateProjectPage />} />
+            <Route path="/projects/complete" element={<VideoCompletePage />} />
           </Routes>
         </main>
       </div>
+      <Modal />
     </BrowserRouter>
   );
 }
