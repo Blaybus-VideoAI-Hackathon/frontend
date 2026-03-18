@@ -18,16 +18,31 @@ export default function ImageEditStage({
   onCompleteEdit,
 }: ImageEditStageProps) {
   const [editedImageSrc, setEditedImageSrc] = useState(imageSrc);
-  const isDirty = false;
+  const [isDirty, setIsDirty] = useState(false);
+  // key를 바꾸면 ImageEditCanvas가 remount되어 상태 초기화
+  const [canvasKey, setCanvasKey] = useState(0);
+
+  const handleCancelEdit = () => {
+    setEditedImageSrc(imageSrc);
+    setIsDirty(false);
+    setCanvasKey((k) => k + 1);
+    onCancelEdit?.();
+  };
+
+  const handleCompleteEdit = () => {
+    onCompleteEdit?.();
+  };
 
   return (
     <section className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_480px]">
       <div className="flex min-w-0 flex-col">
         <ImageEditCanvas
+          key={canvasKey}
           sceneNumber={sceneNumber}
           title={title}
           imageSrc={editedImageSrc}
           onImageChange={setEditedImageSrc}
+          onDirtyChange={setIsDirty}
           onDownload={() => {
             console.log("이미지 다운로드");
           }}
@@ -36,7 +51,7 @@ export default function ImageEditStage({
         <div className="mt-5 mr-4 flex justify-end gap-3">
           <button
             type="button"
-            onClick={onCancelEdit}
+            onClick={handleCancelEdit}
             disabled={!isDirty}
             className={`rounded-[8px] px-5 py-3 text-[14px] font-semibold transition ${
               isDirty
@@ -49,7 +64,7 @@ export default function ImageEditStage({
 
           <button
             type="button"
-            onClick={onCompleteEdit}
+            onClick={handleCompleteEdit}
             className="rounded-[8px] bg-[#5C4DFF] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#4f41ee]"
           >
             수정 완료

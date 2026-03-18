@@ -43,7 +43,7 @@ function SliderRow({
           className="h-2 w-full cursor-pointer accent-[#5C4DFF]"
         />
 
-        <div className="flex h-11 min-w-[88px] items-center justify-center rounded-[10px] bg-[#2A2A2E] px-3 text-[16px] text-white">
+        <div className="flex h-10 min-w-[72px] items-center justify-center rounded-[8px] bg-[#2A2A2E] px-3 text-[14px] text-white">
           {value}
           {suffix}
         </div>
@@ -61,30 +61,30 @@ export default function ImageEffectEditor({
   onApply,
 }: ImageEffectEditorProps) {
   return (
-    <div className="rounded-[10px] bg-[#111111] p-4">
-      <div className="mb-5 flex flex-wrap items-center gap-3">
-        <div className="rounded-[8px] border border-[#3A3A3A] bg-[#1F1F1F] px-4 py-2 text-white">
-          이미지 효과
+    <div className="w-[320px] rounded-[12px] border border-[#2A2A2E] bg-[#111111] p-4 shadow-[0_12px_32px_rgba(0,0,0,0.45)]">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <div className="text-[15px] font-semibold text-white">이미지 효과</div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-[8px] bg-[#3A3A3D] px-3 py-2 text-[14px] text-white"
+          >
+            취소
+          </button>
+
+          <button
+            type="button"
+            onClick={onApply}
+            className="rounded-[8px] bg-[#5C4DFF] px-3 py-2 text-[14px] text-white"
+          >
+            적용
+          </button>
         </div>
-
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-[8px] bg-[#3A3A3D] px-4 py-2 text-white"
-        >
-          취소
-        </button>
-
-        <button
-          type="button"
-          onClick={onApply}
-          className="rounded-[8px] bg-[#5C4DFF] px-4 py-2 text-white"
-        >
-          적용
-        </button>
       </div>
 
-      <div className="space-y-0">
+      <div className="space-y-4">
         <SliderRow
           label="불투명도"
           min={0}
