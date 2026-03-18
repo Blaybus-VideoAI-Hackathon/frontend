@@ -5,6 +5,7 @@ export interface SelectOption {
   label: string;
   dot?: string; // 상태 dot 색상 (hex)
   disabled?: boolean;
+  aiRecommended?: boolean;
 }
 
 interface DropdownSelectProps {
@@ -158,7 +159,14 @@ export default function DropdownSelect({
                 />
               )}
 
-              {opt.label}
+              <span className="flex items-center gap-1.5 flex-1 min-w-0">
+                <span className="truncate">{opt.label}</span>
+                {opt.aiRecommended && (
+                  <span className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-[#7c6af7]/20 text-[#a695ff] border border-[#7c6af7]/30">
+                    AI 추천
+                  </span>
+                )}
+              </span>
             </button>
           ))}
         </div>
