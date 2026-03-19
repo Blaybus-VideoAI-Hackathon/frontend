@@ -4,10 +4,11 @@ import ProjectCoreToggle from "../components/project-new/ProjectCoreToggle";
 import StepNavigation from "../components/project-new/StepNavigation";
 import StoryStage from "../components/story/StoryStage";
 import { STEP_ORDER, type TabId } from "../constants/step";
-import ImageStage from "../components/image/ImageStage";
+import ImageStage from "../components/image&video/ImageStage";
 import CutStage from "../components/cut/CutStage";
 import AiChatBox from "../components/project-new/AiChatBox";
-import ImageEditStage from "../components/image/ImageEditStage";
+import ImageEditStage from "../components/image&video/ImageEditStage";
+import VideoStage from "../components/image&video/VideoStage";
 
 type EditingScene = {
   sceneNumber: number;
@@ -49,8 +50,6 @@ export default function CreateProjectPage() {
     switch (activeStep) {
       case "story":
         return <StoryStage />;
-      case "cut":
-        return <CutStage />;
       case "image":
         return (
           <ImageStage
@@ -60,11 +59,7 @@ export default function CreateProjectPage() {
           />
         );
       case "video":
-        return (
-          <section className="rounded-[16px] bg-[#17181C] p-6 text-white">
-            <div className="text-2xl font-bold">동영상 생성 단계</div>
-          </section>
-        );
+        return <VideoStage />;
       case "finish":
         return (
           <section className="rounded-[16px] bg-[#17181C] p-6 text-white">
