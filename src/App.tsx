@@ -1,13 +1,47 @@
+<<<<<<< Updated upstream
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+=======
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Sidebar from "./components/ui/SideBar";
+import Modal from "./components/ui/Modal";
+import MainPage from "./pages/MainPage";
+import CreateProjectPage from "./pages/CreateProjectPage";
+import VideoCompletePage from "./pages/VideoCompletePage";
+import LoginPage from "./pages/LoginPage";
+import useAuthStore from "./store/Authstore";
+
+function AuthenticatedLayout() {
+  const { user, clearAuth } = useAuthStore();
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  return (
+    <div className="flex h-screen">
+      <Sidebar
+        user={{ name: user.username, email: "" }}
+        onLogout={clearAuth}
+      />
+      <main className="flex-1 overflow-auto">
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/projects/new" element={<CreateProjectPage />} />
+          <Route path="/projects/complete" element={<VideoCompletePage />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+>>>>>>> Stashed changes
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
+<<<<<<< Updated upstream
     <>
       <section id="center">
         <div className="hero">
@@ -116,6 +150,16 @@ function App() {
       <section id="spacer"></section>
     </>
   )
+=======
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/*" element={<AuthenticatedLayout />} />
+      </Routes>
+      <Modal />
+    </BrowserRouter>
+  );
+>>>>>>> Stashed changes
 }
 
 export default App
