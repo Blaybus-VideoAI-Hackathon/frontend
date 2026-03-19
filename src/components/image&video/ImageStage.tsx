@@ -1,38 +1,39 @@
 import { useMemo, useState } from "react";
-import SceneImageListBox, { type SceneImageItem } from "./SceneImageListBox";
 import ExampleSrc from "../../assets/example.png";
-import SceneImagePreview from "./SceneImagePreview";
+import type { SceneMediaItem } from "./SceneMediaListBox";
+import SceneMediaListBox from "./SceneMediaListBox";
+import SceneMediaPreview from "./SceneMediaPreview";
 
-const initialSceneImages: SceneImageItem[] = [
+const initialSceneImages: SceneMediaItem[] = [
   {
     id: 1,
     title: "두 캐릭터 대치",
     status: "done",
-    imageSrc: ExampleSrc,
+    thumbnailSrc: ExampleSrc,
   },
   {
     id: 2,
     title: "아카이누 공격",
     status: "generating",
-    imageSrc: ExampleSrc,
+    thumbnailSrc: ExampleSrc,
   },
   {
     id: 3,
     title: "상크스 방어",
     status: "generating",
-    imageSrc: ExampleSrc,
+    thumbnailSrc: ExampleSrc,
   },
   {
     id: 4,
     title: "격돌",
     status: "generating",
-    imageSrc: ExampleSrc,
+    thumbnailSrc: ExampleSrc,
   },
   {
     id: 5,
     title: "전장충격파",
     status: "generating",
-    imageSrc: ExampleSrc,
+    thumbnailSrc: ExampleSrc,
   },
 ];
 
@@ -46,7 +47,7 @@ type ImageStageProps = {
 
 export default function ImageStage({ onEnterEditMode }: ImageStageProps) {
   const [sceneImages, setSceneImages] =
-    useState<SceneImageItem[]>(initialSceneImages);
+    useState<SceneMediaItem[]>(initialSceneImages);
   const [selectedSceneId, setSelectedSceneId] = useState<number>(
     initialSceneImages[0]?.id ?? 1,
   );
@@ -76,31 +77,35 @@ export default function ImageStage({ onEnterEditMode }: ImageStageProps) {
     const targetIndex = sceneImages.findIndex((scene) => scene.id === sceneId);
     const targetScene = sceneImages[targetIndex];
 
-    if (!targetScene) return;
+    if (!targetScene || !targetScene.thumbnailSrc) return;
 
     onEnterEditMode?.({
       sceneNumber: targetIndex + 1,
       title: targetScene.title,
-      imageSrc: targetScene.imageSrc,
+      imageSrc: targetScene.thumbnailSrc,
     });
   };
 
-  if (!selectedScene) return null;
+  if (!selectedScene || !selectedScene.thumbnailSrc) return null;
 
   return (
     <section className="grid items-start grid-cols-1 gap-4 md:grid-cols-[450px_minmax(0,1fr)]">
-      <SceneImageListBox
+      <SceneMediaListBox
         items={sceneImages}
         selectedSceneId={selectedSceneId}
+        mode="image"
         onSelectScene={setSelectedSceneId}
         onRegenerateScene={handleRegenerateScene}
         onEditScene={handleEditScene}
       />
 
-      <SceneImagePreview
+      <SceneMediaPreview
         sceneNumber={selectedSceneNumber}
         title={selectedScene.title}
-        imageSrc={selectedScene.imageSrc}
+        mode="image"
+        status={selectedScene.status}
+        src={selectedScene.thumbnailSrc}
+        onAction={() => handleEditScene(selectedScene.id)}
       />
     </section>
   );
