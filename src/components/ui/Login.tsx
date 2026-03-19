@@ -29,7 +29,7 @@ export default function Login() {
 
       const { token, user } = response.data;
       setAuth(token, user);
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       const message =
         err instanceof AxiosError
