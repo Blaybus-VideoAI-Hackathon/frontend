@@ -112,7 +112,7 @@ export default function VideoMergeStage() {
         </h3>
 
         {/* 씬 리스트 + 연결자 */}
-        <div className="flex flex-col overflow-y-auto" style={{ maxHeight: 480 }}>
+        <div className="flex flex-col">
           {INITIAL_SCENES.map((scene, index) => (
             <div key={scene.number}>
               <SceneCard
