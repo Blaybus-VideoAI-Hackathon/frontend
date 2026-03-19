@@ -9,6 +9,7 @@ import CutStage from "../components/cut/CutStage";
 import AiChatBox from "../components/project-new/AiChatBox";
 import ImageEditStage from "../components/image&video/ImageEditStage";
 import VideoStage from "../components/image&video/VideoStage";
+import VideoMergeStage from "../components/video/VideoMergeStage";
 
 type EditingScene = {
   sceneNumber: number;
@@ -61,11 +62,7 @@ export default function CreateProjectPage() {
       case "video":
         return <VideoStage />;
       case "finish":
-        return (
-          <section className="rounded-[16px] bg-[#17181C] p-6 text-white">
-            <div className="text-2xl font-bold">최종 완성 단계</div>
-          </section>
-        );
+        return <VideoMergeStage />;
       default:
         return null;
     }

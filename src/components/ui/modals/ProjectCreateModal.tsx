@@ -182,7 +182,7 @@ function Step3({
 }
 
 // ─── 메인 Wizard 컴포넌트 ───────────────────────────────
-export default function ProjectCreateModal() {
+export default function ProjectCreateModal({ onComplete }: { onComplete?: () => void }) {
   const { close } = useModalStore();
 
   const [step, setStep] = useState(0);
@@ -202,6 +202,7 @@ export default function ProjectCreateModal() {
     // TODO: 수집한 데이터로 프로젝트 생성 API 호출
     console.log({ projectName, aspectRatio, duration, videoStyle, videoPurpose });
     close();
+    onComplete?.();
   };
 
   return (
