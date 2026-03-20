@@ -1,5 +1,7 @@
 import { useState } from "react";
+import axios from "axios";
 import { useModalStore } from "../../../store/ModalStore";
+import useAuthStore from "../../../store/Authstore";
 import StepIndicator from "../StepIndicator";
 import Button from "../Button";
 
@@ -148,12 +150,14 @@ function Step2({
 
 // ─── Step 3: 영상 목적 ─────────────────────────────────
 function Step3({
-  selected, setSelected, onPrev, onSubmit,
+  selected, setSelected, onPrev, onSubmit, isLoading, error,
 }: {
   selected: VideoPurpose;
   setSelected: (v: VideoPurpose) => void;
   onPrev: () => void;
   onSubmit: () => void;
+  isLoading: boolean;
+  error: string;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -173,19 +177,25 @@ function Step3({
           </button>
         ))}
       </div>
+      {error && <p className="text-sm text-red-400">{error}</p>}
       <div className="flex justify-between mt-1">
-        <Button variant="secondary" onClick={onPrev}>이전</Button>
-        <Button variant="primary" onClick={onSubmit}>프로젝트 생성하기</Button>
+        <Button variant="secondary" onClick={onPrev} disabled={isLoading}>이전</Button>
+        <Button variant="primary" onClick={onSubmit} disabled={isLoading}>
+          {isLoading ? "생성 중..." : "프로젝트 생성하기"}
+        </Button>
       </div>
     </div>
   );
 }
 
 // ─── 메인 Wizard 컴포넌트 ───────────────────────────────
-export default function ProjectCreateModal({ onComplete }: { onComplete?: () => void }) {
+export default function ProjectCreateModal({ onComplete }: { onComplete?: (projectId: number) => void }) {
   const { close } = useModalStore();
+  const token = useAuthStore((state) => state.token);
 
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Step 1 state
   const [projectName, setProjectName] = useState("");
@@ -198,11 +208,31 @@ export default function ProjectCreateModal({ onComplete }: { onComplete?: () => 
   // Step 3 state
   const [videoPurpose, setVideoPurpose] = useState<VideoPurpose>("스토리형");
 
-  const handleSubmit = () => {
-    // TODO: 수집한 데이터로 프로젝트 생성 API 호출
-    console.log({ projectName, aspectRatio, duration, videoStyle, videoPurpose });
-    close();
-    onComplete?.();
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const durationSeconds = parseInt(duration);
+      const response = await axios.post(
+        "https://hdb-backend.onrender.com/api/projects",
+        {
+          title: projectName,
+          style: videoStyle,
+          ratio: aspectRatio,
+          purpose: videoPurpose,
+          duration: durationSeconds,
+        },
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+      close();
+      onComplete?.(response.data.data.id);
+    } catch {
+      setError("프로젝트 생성에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -234,6 +264,8 @@ export default function ProjectCreateModal({ onComplete }: { onComplete?: () => 
           setSelected={setVideoPurpose}
           onPrev={() => setStep(1)}
           onSubmit={handleSubmit}
+          isLoading={isLoading}
+          error={error}
         />
       )}
     </div>
