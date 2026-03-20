@@ -8,7 +8,7 @@ export default function MainPage() {
   const navigate = useNavigate();
 
   const handleCreate = () => {
-    open(<ProjectCreateModal onComplete={() => navigate("/projects/new")} />);
+    open(<ProjectCreateModal onComplete={(projectId) => navigate(`/projects/${projectId}`)} />);
   };
 
   return (
