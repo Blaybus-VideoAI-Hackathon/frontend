@@ -1,6 +1,8 @@
 import { useState } from "react";
+import axios from "axios";
 import SceneCard from "../ui/SceneCard";
 import type { SelectOption } from "../ui/DropdownSelect";
+import useAuthStore from "../../store/Authstore";
 
 // ──────────────────────────────────────────
 // 전환 효과 옵션
@@ -48,14 +50,30 @@ function SceneConnector() {
 // ──────────────────────────────────────────
 // VideoMergeStage
 // ──────────────────────────────────────────
-export default function VideoMergeStage() {
+export default function VideoMergeStage({ projectId }: { projectId: number }) {
   const [transitions, setTransitions] = useState<Record<number, string>>({
     1: "cut",
     2: "cross-dissolve",
   });
+  const [isMerging, setIsMerging] = useState(false);
+  const token = useAuthStore((state) => state.token);
 
   const handleTransitionChange = (sceneNumber: number, value: string) => {
     setTransitions((prev) => ({ ...prev, [sceneNumber]: value }));
+  };
+
+  const handleMerge = async () => {
+    if (isMerging) return;
+    setIsMerging(true);
+    try {
+      await axios.post(
+        `https://hdb-backend.onrender.com/api/projects/${projectId}/videos/merge`,
+        { skipMissingVideos: false, outputFormat: "mp4", outputQuality: 720 },
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+      );
+    } finally {
+      setIsMerging(false);
+    }
   };
 
   const totalDuration = INITIAL_SCENES.reduce((sum, s) => sum + s.duration, 0);
@@ -133,9 +151,11 @@ export default function VideoMergeStage() {
         {/* 영상 병합 버튼 */}
         <button
           type="button"
-          className="mt-4 w-full rounded-xl bg-[#7c6af7] py-3 text-sm font-bold text-white transition-colors hover:bg-[#6b5ce7] active:bg-[#5a4cd6]"
+          onClick={handleMerge}
+          disabled={isMerging}
+          className="mt-4 w-full rounded-xl bg-[#7c6af7] py-3 text-sm font-bold text-white transition-colors hover:bg-[#6b5ce7] active:bg-[#5a4cd6] disabled:opacity-60"
         >
-          {totalDuration}초 영상 병합
+          {isMerging ? "병합 중..." : `${totalDuration}초 영상 병합`}
         </button>
       </div>
     </section>

@@ -64,7 +64,7 @@ export default function CreateProjectPage() {
       case "video":
         return <VideoStage />;
       case "finish":
-        return <VideoMergeStage />;
+        return <VideoMergeStage projectId={Number(projectId)} />;
       default:
         return null;
     }
