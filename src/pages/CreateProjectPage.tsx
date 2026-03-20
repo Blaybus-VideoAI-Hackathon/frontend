@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import StepTabs from "../components/project-new/StepTabs";
 import ProjectCoreToggle from "../components/project-new/ProjectCoreToggle";
 import StepNavigation from "../components/project-new/StepNavigation";
@@ -18,6 +19,7 @@ type EditingScene = {
 } | null;
 
 export default function CreateProjectPage() {
+  const { projectId } = useParams<{ projectId: string }>();
   const [activeStep, setActiveStep] = useState<TabId>("story");
   const [editingScene, setEditingScene] = useState<EditingScene>(null);
 
@@ -50,7 +52,7 @@ export default function CreateProjectPage() {
   const renderStageContent = () => {
     switch (activeStep) {
       case "story":
-        return <StoryStage />;
+        return <StoryStage projectId={Number(projectId)} />;
       case "image":
         return (
           <ImageStage

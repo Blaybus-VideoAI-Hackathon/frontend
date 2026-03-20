@@ -1,14 +1,32 @@
 import { useState, useRef, type ChangeEvent } from "react";
+import axios from "axios";
+import useAuthStore from "../../store/Authstore";
 
 const SUGGESTIONS: string[] = [
   "조로와 루피가 써니호에서 싸우는 장면 만들어줘",
   "루피가 바베큐를 맛있게 먹는 장면 만들어줘",
 ];
 
-export default function StoryStage() {
+export default function StoryStage({ projectId }: { projectId: number }) {
   const [idea, setIdea] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const token = useAuthStore((state) => state.token);
+
+  const handleSubmit = async () => {
+    if (!idea.trim() || isLoading) return;
+    setIsLoading(true);
+    try {
+      await axios.post(
+        `https://hdb-backend.onrender.com/api/projects/${projectId}/plans`,
+        { userPrompt: idea },
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
@@ -107,6 +125,8 @@ export default function StoryStage() {
         />
         <div className="flex justify-end">
           <button
+            onClick={handleSubmit}
+            disabled={!idea.trim() || isLoading}
             className="flex h-10 w-10 items-center justify-center rounded-full transition-colors"
             style={{
               background: idea.trim() ? "#6366f1" : "#2a2a2e",
