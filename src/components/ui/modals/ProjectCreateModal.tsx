@@ -1,7 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
 import { useModalStore } from "../../../store/ModalStore";
-import useAuthStore from "../../../store/Authstore";
 import StepIndicator from "../StepIndicator";
 import Button from "../Button";
 
@@ -191,8 +190,6 @@ function Step3({
 // ─── 메인 Wizard 컴포넌트 ───────────────────────────────
 export default function ProjectCreateModal({ onComplete }: { onComplete?: (projectId: number) => void }) {
   const { close } = useModalStore();
-  const token = useAuthStore((state) => state.token);
-
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -222,9 +219,7 @@ export default function ProjectCreateModal({ onComplete }: { onComplete?: (proje
           purpose: videoPurpose,
           duration: durationSeconds,
         },
-        {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
+        {}
       );
       close();
       onComplete?.(response.data.data.id);

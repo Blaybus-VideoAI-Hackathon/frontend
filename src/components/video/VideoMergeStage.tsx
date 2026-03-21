@@ -2,8 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import SceneCard from "../ui/SceneCard";
 import type { SelectOption } from "../ui/DropdownSelect";
-import useAuthStore from "../../store/Authstore";
-
 // ──────────────────────────────────────────
 // 전환 효과 옵션
 // ──────────────────────────────────────────
@@ -56,8 +54,6 @@ export default function VideoMergeStage({ projectId }: { projectId: number }) {
     2: "cross-dissolve",
   });
   const [isMerging, setIsMerging] = useState(false);
-  const token = useAuthStore((state) => state.token);
-
   const handleTransitionChange = (sceneNumber: number, value: string) => {
     setTransitions((prev) => ({ ...prev, [sceneNumber]: value }));
   };
@@ -69,7 +65,7 @@ export default function VideoMergeStage({ projectId }: { projectId: number }) {
       await axios.post(
         `https://hdb-backend.onrender.com/api/projects/${projectId}/videos/merge`,
         { skipMissingVideos: false, outputFormat: "mp4", outputQuality: 720 },
-        { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+        {},
       );
     } finally {
       setIsMerging(false);
