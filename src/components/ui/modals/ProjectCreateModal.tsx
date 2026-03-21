@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import axios from "axios";
 import { useModalStore } from "../../../store/ModalStore";
 import StepIndicator from "../StepIndicator";
 import Button from "../Button";
@@ -191,6 +191,8 @@ function Step3({
 export default function ProjectCreateModal({ onComplete }: { onComplete?: (projectId: number) => void }) {
   const { close } = useModalStore();
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Step 1 state
   const [projectName, setProjectName] = useState("");
@@ -203,9 +205,29 @@ export default function ProjectCreateModal({ onComplete }: { onComplete?: (proje
   // Step 3 state
   const [videoPurpose, setVideoPurpose] = useState<VideoPurpose>("스토리형");
 
-  const handleSubmit = () => {
-    close();
-    onComplete?.(1);
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const durationSeconds = parseInt(duration);
+      const response = await axios.post(
+        "https://hdb-backend.onrender.com/api/projects",
+        {
+          title: projectName,
+          style: videoStyle,
+          ratio: aspectRatio,
+          purpose: videoPurpose,
+          duration: durationSeconds,
+        },
+        {}
+      );
+      close();
+      onComplete?.(response.data.data.id);
+    } catch {
+      setError("프로젝트 생성에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -237,8 +259,8 @@ export default function ProjectCreateModal({ onComplete }: { onComplete?: (proje
           setSelected={setVideoPurpose}
           onPrev={() => setStep(1)}
           onSubmit={handleSubmit}
-          isLoading={false}
-          error={""}
+          isLoading={isLoading}
+          error={error}
         />
       )}
     </div>
