@@ -40,10 +40,10 @@ export default function StoryStage({ projectId }: { projectId: number }) {
     <section className="flex flex-col items-center rounded-2xl bg-[#17181C] px-6 py-12">
       {/* Headline */}
       <h1 className="mb-2.5 text-center text-[28px] font-bold tracking-tight text-white!">
-        오늘은 어떤 상상의 문을 열어볼까요?
+        당신의 이야기를 들려주세요.
       </h1>
       <p className="mb-9 text-center text-sm leading-relaxed text-gray-500">
-        떠오르는 작은 상상 하나만으로도 새로운 이야기가 시작됩니다. 어떤
+        떠오르는 작은 아이디어 하나만으로도 새로운 이야기가 시작됩니다. 어떤
         장면을 만들고 어떤 세계를 펼칠지, 지금 상상의 문을 열어보세요.
       </p>
 
