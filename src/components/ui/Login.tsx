@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
-import useAuthStore from "../../store/Authstore";
-
 export default function Login() {
   const navigate = useNavigate();
-  const setAuth = useAuthStore((state) => state.setAuth);
 
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
@@ -27,8 +24,6 @@ export default function Login() {
         password,
       });
 
-      const { token, user } = response.data;
-      setAuth(token, user);
       navigate("/");
     } catch (err) {
       const message =
