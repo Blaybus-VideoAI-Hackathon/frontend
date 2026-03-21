@@ -22,8 +22,11 @@ function App() {
               <main className="flex-1 overflow-auto">
                 <Routes>
                   <Route path="/" element={<MainPage />} />
-                  <Route path="/projects/:projectId" element={<CreateProjectPage />} />
-                  <Route path="/projects/complete" element={<VideoCompletePage />} />
+                  <Route path="/projects" element={<CreateProjectPage />} />
+                  <Route
+                    path="/projects/complete"
+                    element={<VideoCompletePage />}
+                  />
                 </Routes>
               </main>
               <Modal />
