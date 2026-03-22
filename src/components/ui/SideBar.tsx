@@ -163,11 +163,10 @@ export default function Sidebar({
       </div>
 
       {/* 네비게이션 아이콘 (항상 표시) */}
-      <nav className="px-3 flex flex-col gap-1 mt-1">
+      <nav className={`flex flex-col gap-1 mt-1 ${isOpen ? "px-3" : "px-2"}`}>
         <button
           onClick={handleCreateProject}
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-white/60
-            hover:text-white/90 hover:bg-white/5 transition-all duration-150 text-left ${!isOpen ? "justify-center px-0" : ""}`}
+          className={`flex items-center py-2 rounded-lg text-white/60 hover:text-white/90 hover:bg-white/5 transition-all duration-150 ${isOpen ? "gap-2.5 px-3 text-[13px] text-left" : "justify-center px-2"}`}
         >
           <IconPencil />
           {isOpen && <span>프로젝트 생성</span>}
@@ -175,8 +174,7 @@ export default function Sidebar({
 
         <button
           onClick={handleProjectList}
-          className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-white/60
-            transition-all duration-150 text-left ${!isOpen ? "justify-center px-0" : ""}`}
+          className={`flex items-center py-2 rounded-lg text-white/60 transition-all duration-150 ${isOpen ? "gap-2.5 px-3 text-[13px] text-left" : "justify-center px-2"}`}
         >
           <IconFolder />
           {isOpen && <span>프로젝트 목록</span>}
