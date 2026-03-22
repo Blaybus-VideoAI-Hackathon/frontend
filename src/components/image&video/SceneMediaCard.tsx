@@ -3,7 +3,12 @@ import GeneratingIcon from "../../assets/icons/loading.svg";
 import DoneIcon from "../../assets/icons/check_purple.svg";
 import PlayIcon from "../../assets/icons/play_white.svg";
 
-export type SceneMediaStatus = "idle" | "generating" | "done" | "locked";
+export type SceneMediaStatus =
+  | "idle"
+  | "generating"
+  | "done"
+  | "locked"
+  | "failed";
 
 type SceneMediaCardProps = {
   sceneNumber: number;
@@ -45,6 +50,12 @@ function StatusText({
     );
   }
 
+  if (status === "failed") {
+    return (
+      <div className="text-[14px] font-medium text-[#FF8E8E]">생성 실패</div>
+    );
+  }
+
   if (status === "idle" && mode === "video") {
     return null;
   }
@@ -69,6 +80,7 @@ export default function SceneMediaCard({
   const isGenerating = status === "generating";
   const isIdle = status === "idle";
   const isLocked = status === "locked";
+  const isFailed = status === "failed";
 
   return (
     <button
@@ -101,11 +113,20 @@ export default function SceneMediaCard({
           <div className="relative h-[100px] w-[146px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,0.08)]">
             {thumbnailSrc ? (
               <>
-                <img
-                  src={thumbnailSrc}
-                  alt={`${title} 썸네일`}
-                  className="h-full w-full object-cover"
-                />
+                {mode === "video" ? (
+                  <video
+                    src={thumbnailSrc}
+                    className="h-full w-full object-cover"
+                    muted
+                    preload="metadata"
+                  />
+                ) : (
+                  <img
+                    src={thumbnailSrc}
+                    alt={`${title} 썸네일`}
+                    className="h-full w-full object-cover"
+                  />
+                )}
 
                 {mode === "video" && isDone && (
                   <>
@@ -137,21 +158,17 @@ export default function SceneMediaCard({
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            {mode === "image" && (
-              <>
-                {isDone && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit?.();
-                    }}
-                    className="rounded-full border border-[rgba(255,255,255,0.4)] px-4 py-2 text-[14px] font-medium text-[rgba(255,255,255,0.72)] transition hover:bg-[rgba(255,255,255,0.06)]"
-                  >
-                    수정
-                  </button>
-                )}
-              </>
+            {mode === "image" && isDone && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit?.();
+                }}
+                className="rounded-full border border-[rgba(255,255,255,0.4)] px-4 py-2 text-[14px] font-medium text-[rgba(255,255,255,0.72)] transition hover:bg-[rgba(255,255,255,0.06)]"
+              >
+                수정
+              </button>
             )}
 
             {mode === "video" && (
@@ -169,7 +186,7 @@ export default function SceneMediaCard({
                   </button>
                 )}
 
-                {isDone && (
+                {(isDone || isFailed) && (
                   <button
                     type="button"
                     onClick={(e) => {
@@ -178,7 +195,7 @@ export default function SceneMediaCard({
                     }}
                     className="rounded-full border border-[rgba(255,255,255,0.4)] px-5 py-2 text-[14px] font-medium text-[rgba(255,255,255,0.72)] transition hover:bg-[rgba(255,255,255,0.06)]"
                   >
-                    재생성
+                    {isFailed ? "재시도" : "재생성"}
                   </button>
                 )}
               </>
@@ -187,20 +204,27 @@ export default function SceneMediaCard({
         </div>
       )}
 
-      {mode === "video" && status === "idle" && !thumbnailSrc && (
-        <div className="mt-4 flex justify-end">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onGenerate?.();
-            }}
-            className="rounded-full border border-[rgba(255,255,255,0.4)] px-5 py-2 text-[14px] font-medium text-[rgba(255,255,255,0.72)] transition hover:bg-[rgba(255,255,255,0.06)]"
-          >
-            생성
-          </button>
-        </div>
-      )}
+      {mode === "video" &&
+        (status === "idle" || status === "failed") &&
+        !thumbnailSrc && (
+          <div className="mt-4 flex justify-end">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+
+                if (status === "failed") {
+                  onRegenerate?.();
+                } else {
+                  onGenerate?.();
+                }
+              }}
+              className="rounded-full border border-[rgba(255,255,255,0.4)] px-5 py-2 text-[14px] font-medium text-[rgba(255,255,255,0.72)] transition hover:bg-[rgba(255,255,255,0.06)]"
+            >
+              {status === "failed" ? "재시도" : "생성"}
+            </button>
+          </div>
+        )}
     </button>
   );
 }

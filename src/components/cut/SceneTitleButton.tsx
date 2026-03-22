@@ -40,31 +40,33 @@ export default function SceneTitleButton({
         </span>
       </div>
 
-      <span
-        role="button"
-        tabIndex={0}
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove?.();
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
+      {onRemove && (
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation();
             onRemove?.();
-          }
-        }}
-        className="ml-4 inline-flex h-6 w-6 shrink-0 items-center justify-center"
-      >
-        <img
-          src={CloseIcon}
-          alt="삭제"
-          className={
-            selected
-              ? "h-4 w-4 object-contain"
-              : "h-4 w-4 object-contain opacity-90"
-          }
-        />
-      </span>
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onRemove?.();
+            }
+          }}
+          className="ml-4 inline-flex h-6 w-6 shrink-0 items-center justify-center"
+        >
+          <img
+            src={CloseIcon}
+            alt="삭제"
+            className={
+              selected
+                ? "h-4 w-4 object-contain"
+                : "h-4 w-4 object-contain opacity-90"
+            }
+          />
+        </span>
+      )}
     </button>
   );
 }

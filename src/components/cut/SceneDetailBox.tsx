@@ -1,14 +1,15 @@
+import type { CutSceneDetailItem } from "../../hooks/useCutScenes";
 import SceneLabel from "./SceneLabel";
-import type { SceneDetailItem } from "./SceneListBox";
 
 type SceneDetailBoxProps = {
   sceneNumber: number;
   title: string;
-  details: SceneDetailItem[];
+  details: CutSceneDetailItem[];
+  isRegenerating?: boolean;
   onRegenerateScene?: () => void;
 };
 
-function DetailRow({ label, value }: SceneDetailItem) {
+function DetailRow({ label, value }: CutSceneDetailItem) {
   return (
     <div className="space-y-2">
       <h3 className="text-[20px] font-bold leading-none text-white">{label}</h3>
@@ -23,6 +24,7 @@ export default function SceneDetailBox({
   sceneNumber,
   title,
   details,
+  isRegenerating = false,
   onRegenerateScene,
 }: SceneDetailBoxProps) {
   return (
@@ -42,9 +44,16 @@ export default function SceneDetailBox({
         <button
           type="button"
           onClick={onRegenerateScene}
-          className="rounded-[8px] bg-[#5C4DFF] px-8 py-4 text-[18px] font-semibold text-white transition hover:bg-[#4f41ee] active:scale-[0.98]"
+          disabled={isRegenerating}
+          className={`rounded-[8px] px-8 py-4 text-[18px] font-semibold text-white transition ${
+            isRegenerating
+              ? "cursor-not-allowed bg-[#3A3A3D] text-[#8B8B92]"
+              : "bg-[#5C4DFF] hover:bg-[#4f41ee] active:scale-[0.98]"
+          }`}
         >
-          Scene {sceneNumber}만 다시 추천받기
+          {isRegenerating
+            ? `Scene ${sceneNumber} 재추천 중...`
+            : `Scene ${sceneNumber}만 다시 추천받기`}
         </button>
       </div>
     </section>

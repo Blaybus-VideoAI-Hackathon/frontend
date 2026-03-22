@@ -22,7 +22,10 @@ function App() {
               <main className="flex-1 overflow-auto">
                 <Routes>
                   <Route path="/" element={<MainPage />} />
-                  <Route path="/projects/:projectId" element={<CreateProjectPage />} />
+                  <Route
+                    path="/projects/:projectId"
+                    element={<CreateProjectPage />}
+                  />
                   <Route
                     path="/projects/complete"
                     element={<VideoCompletePage />}

@@ -1,23 +1,12 @@
+import type { CutScene } from "../../hooks/useCutScenes";
 import SceneTitleButton from "./SceneTitleButton";
-import AddSceneButton from "./AddSceneButton";
-
-export type SceneDetailItem = {
-  label: string;
-  value: string;
-};
-
-export type SceneItem = {
-  id: number;
-  title: string;
-  details: SceneDetailItem[];
-};
 
 type SceneListBoxProps = {
-  scenes: SceneItem[];
+  scenes: CutScene[];
   selectedSceneId: number;
   onSelectScene: (sceneId: number) => void;
   onRemoveScene?: (sceneId: number) => void;
-  onAddScene?: () => void;
+  removeDisabled?: boolean;
 };
 
 export default function SceneListBox({
@@ -25,11 +14,11 @@ export default function SceneListBox({
   selectedSceneId,
   onSelectScene,
   onRemoveScene,
-  onAddScene,
+  removeDisabled = false,
 }: SceneListBoxProps) {
   return (
-    <section className="w-full h-full rounded-[8px] bg-gray-900 px-6 py-5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
-      <div className="mb-6 text-gray-100 text-[18px] font-bold">
+    <section className="h-full w-full rounded-[8px] bg-gray-900 px-6 py-5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
+      <div className="mb-6 text-[18px] font-bold text-gray-100">
         컷 구성 (스토리 흐름)
       </div>
 
@@ -45,12 +34,14 @@ export default function SceneListBox({
               title={scene.title}
               selected={isSelected}
               onClick={() => onSelectScene(scene.id)}
-              onRemove={() => onRemoveScene?.(scene.id)}
+              onRemove={
+                onRemoveScene && !removeDisabled
+                  ? () => onRemoveScene(scene.id)
+                  : undefined
+              }
             />
           );
         })}
-
-        <AddSceneButton onClick={onAddScene} />
       </div>
     </section>
   );

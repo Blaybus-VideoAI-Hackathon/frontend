@@ -1,18 +1,17 @@
 import SceneLabel from "../cut/SceneLabel";
 import GeneratingIcon from "../../assets/icons/loading.svg";
-import PlayIcon from "../../assets/icons/play_white.svg";
 
 type SceneMediaPreviewProps = {
   sceneNumber: number;
   title: string;
 
   mode: "image" | "video";
-  status: "idle" | "generating" | "done" | "locked";
+  status: "idle" | "generating" | "done" | "locked" | "failed";
 
-  src?: string; // image / video thumbnail
+  src?: string;
   durationText?: string;
 
-  onAction?: () => void; // edit or regenerate
+  onAction?: () => void;
 };
 
 export default function SceneMediaPreview({
@@ -26,48 +25,42 @@ export default function SceneMediaPreview({
 }: SceneMediaPreviewProps) {
   const isDone = status === "done";
   const isGenerating = status === "generating";
+  const isFailed = status === "failed";
+  const canRetry = isDone || isFailed;
 
   return (
     <section className="self-start w-full rounded-[8px] bg-gray-900 p-6">
-      {/* 헤더 */}
       <div className="mb-6 flex items-center gap-4">
         <SceneLabel sceneNumber={sceneNumber} selected />
         <div className="text-[25px] font-bold text-white">{title}</div>
       </div>
 
-      {/* 콘텐츠 */}
       <div className="relative overflow-hidden rounded-[8px] bg-[rgba(255,255,255,0.04)]">
-        {/* DONE */}
         {isDone && src && (
           <div className="relative">
-            <img
-              src={src}
-              alt={title}
-              className="block h-auto w-full object-cover"
-            />
+            {mode === "video" ? (
+              <video
+                src={src}
+                className="block h-auto w-full"
+                controls
+                preload="metadata"
+              />
+            ) : (
+              <img
+                src={src}
+                alt={title}
+                className="block h-auto w-full object-cover"
+              />
+            )}
 
-            {/* video 전용 overlay */}
-            {mode === "video" && (
-              <>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <img
-                    src={PlayIcon}
-                    alt=""
-                    className="h-14 w-14 object-contain"
-                  />
-                </div>
-
-                {durationText && (
-                  <div className="absolute bottom-3 right-3 rounded bg-black/60 px-2 py-1 text-sm text-white">
-                    {durationText}
-                  </div>
-                )}
-              </>
+            {mode === "video" && durationText && (
+              <div className="absolute bottom-3 right-3 rounded bg-black/60 px-2 py-1 text-sm text-white">
+                {durationText}
+              </div>
             )}
           </div>
         )}
 
-        {/* GENERATING */}
         {isGenerating && (
           <div className="flex h-[520px] w-full items-center justify-center">
             <div className="flex flex-col items-center gap-3">
@@ -83,8 +76,17 @@ export default function SceneMediaPreview({
           </div>
         )}
 
-        {/* EMPTY */}
-        {!isDone && !isGenerating && (
+        {isFailed && (
+          <div className="flex h-[520px] w-full items-center justify-center">
+            <div className="text-[16px] text-[#FF8E8E]">
+              {mode === "image"
+                ? "이미지 생성에 실패했습니다. 다시 시도해주세요."
+                : "영상 생성에 실패했습니다. 다시 시도해주세요."}
+            </div>
+          </div>
+        )}
+
+        {!isDone && !isGenerating && !isFailed && (
           <div className="flex h-[520px] w-full items-center justify-center">
             <div className="text-[16px] text-[rgba(255,255,255,0.4)]">
               아직 생성된 콘텐츠가 없습니다.
@@ -93,7 +95,6 @@ export default function SceneMediaPreview({
         )}
       </div>
 
-      {/* 하단 버튼 */}
       <div className="mt-6 flex justify-center">
         {mode === "image" && (
           <button
@@ -102,7 +103,7 @@ export default function SceneMediaPreview({
             className={`rounded-[8px] px-6 py-3 text-[16px] font-semibold ${
               isDone
                 ? "bg-[#4A4A4F] text-white hover:bg-[#5A5A61]"
-                : "bg-[#3A3A3D] text-[#8B8B92] cursor-not-allowed"
+                : "cursor-not-allowed bg-[#3A3A3D] text-[#8B8B92]"
             }`}
           >
             Scene {String(sceneNumber).padStart(2, "0")} 이미지 수정
@@ -112,14 +113,15 @@ export default function SceneMediaPreview({
         {mode === "video" && (
           <button
             onClick={onAction}
-            disabled={!isDone}
+            disabled={!canRetry}
             className={`rounded-[8px] px-6 py-3 text-[16px] font-semibold ${
-              isDone
+              canRetry
                 ? "bg-[#4A4A4F] text-white hover:bg-[#5A5A61]"
-                : "bg-[#3A3A3D] text-[#8B8B92] cursor-not-allowed"
+                : "cursor-not-allowed bg-[#3A3A3D] text-[#8B8B92]"
             }`}
           >
-            Scene {String(sceneNumber).padStart(2, "0")} 영상 재생성
+            Scene {String(sceneNumber).padStart(2, "0")}{" "}
+            {isFailed ? "영상 재시도" : "영상 재생성"}
           </button>
         )}
       </div>
