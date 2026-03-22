@@ -12,6 +12,7 @@ export type ImageSceneItem = {
   status: ImageSceneStatus;
   thumbnailSrc?: string;
   latestImageNumber?: number;
+  latestImageId?: number;
 };
 
 type SceneBase = {
@@ -82,6 +83,7 @@ function buildSceneItems(sceneBases: SceneBase[], images: SceneImage[]) {
           status: "generating",
           thumbnailSrc: getDisplayImageUrl(latestImage),
           latestImageNumber: latestImage.imageNumber,
+          latestImageId: latestImage.id,
         };
       }
 
@@ -91,6 +93,7 @@ function buildSceneItems(sceneBases: SceneBase[], images: SceneImage[]) {
           title: sceneBase.title,
           status: "failed",
           latestImageNumber: latestImage.imageNumber,
+          latestImageId: latestImage.id,
         };
       }
 
@@ -100,6 +103,7 @@ function buildSceneItems(sceneBases: SceneBase[], images: SceneImage[]) {
         status: "done",
         thumbnailSrc: getDisplayImageUrl(latestImage),
         latestImageNumber: latestImage.imageNumber,
+        latestImageId: latestImage.id,
       };
     }
 

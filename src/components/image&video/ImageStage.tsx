@@ -8,6 +8,8 @@ type ImageStageProps = {
     sceneNumber: number;
     title: string;
     imageSrc: string;
+    sceneId: number;
+    imageId: number;
   }) => void;
 };
 
@@ -88,10 +90,14 @@ export default function ImageStage({
       return;
     }
 
+    if (!targetScene.latestImageId) return;
+
     onEnterEditMode?.({
       sceneNumber: targetIndex + 1,
       title: targetScene.title,
       imageSrc: targetScene.thumbnailSrc,
+      sceneId: targetScene.id,
+      imageId: targetScene.latestImageId,
     });
   };
 

@@ -1,5 +1,6 @@
 import { axiosInstance } from "./axiosInstance";
 import type {
+  EditSceneImageResponse,
   GenerateSceneImageResponse,
   GetProjectImagesResponse,
 } from "../types/image";
@@ -27,6 +28,27 @@ export async function generateSceneImage({
 export async function getProjectImages({ projectId }: GetProjectImagesParams) {
   const response = await axiosInstance.get<GetProjectImagesResponse>(
     `/api/projects/${projectId}/images`,
+  );
+
+  return response.data;
+}
+
+type EditSceneImageWithAiParams = {
+  projectId: number;
+  sceneId: number;
+  imageId: number;
+  userEditText: string;
+};
+
+export async function editSceneImageWithAi({
+  projectId,
+  sceneId,
+  imageId,
+  userEditText,
+}: EditSceneImageWithAiParams) {
+  const response = await axiosInstance.post<EditSceneImageResponse>(
+    `/api/projects/${projectId}/scenes/${sceneId}/images/${imageId}/edit/ai`,
+    { userEditText },
   );
 
   return response.data;

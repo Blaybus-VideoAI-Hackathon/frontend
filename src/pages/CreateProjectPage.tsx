@@ -17,6 +17,8 @@ type EditingScene = {
   sceneNumber: number;
   title: string;
   imageSrc: string;
+  sceneId: number;
+  imageId: number;
 } | null;
 
 export default function CreateProjectPage() {
@@ -128,6 +130,9 @@ export default function CreateProjectPage() {
 
         {isImageEditing && editingScene ? (
           <ImageEditStage
+            projectId={projectId}
+            sceneId={editingScene.sceneId}
+            imageId={editingScene.imageId}
             sceneNumber={editingScene.sceneNumber}
             title={editingScene.title}
             imageSrc={editingScene.imageSrc}
@@ -174,9 +179,20 @@ export default function CreateProjectPage() {
         ) : (
           <>
             <ProjectCoreToggle />
-            <div className="min-h-[760px]">{renderStageContent()}</div>
+            <div className="flex min-h-190 flex-col">
+              {renderStageContent()}
+            </div>
           </>
         )}
+        {/* 특정 프로젝트 테스트용 */}
+        {/* {!isImageEditing && (
+          <StepNavigation
+            canGoPrev={canGoPrev}
+            canGoNext={canGoNext}
+            onPrev={handlePrev}
+            onNext={handleNext}
+          />
+        )} */}
 
         {!isImageEditing && activeStep !== "story" && (
           <StepNavigation
