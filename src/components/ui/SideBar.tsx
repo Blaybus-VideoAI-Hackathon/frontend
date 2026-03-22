@@ -84,14 +84,6 @@ export default function Sidebar({
     void load();
   }, []);
 
-  const fetchProjects = useCallback(async () => {
-    try {
-      const res = await axiosInstance.get<{ data: Project[] }>("/api/projects");
-      setProjects(res.data?.data ?? []);
-    } catch {
-      // 조회 실패 시 빈 목록 유지
-    }
-  }, []);
 
   // 씬 조회 — effect는 inline, 토글 핸들러용은 useCallback
   useEffect(() => {
