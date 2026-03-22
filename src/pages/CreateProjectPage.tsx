@@ -123,7 +123,7 @@ export default function CreateProjectPage() {
           </>
         )}
 
-        {!isImageEditing && (
+        {!isImageEditing && activeStep !== "story" && (
           <StepNavigation
             canGoPrev={canGoPrev}
             canGoNext={canGoNext}
