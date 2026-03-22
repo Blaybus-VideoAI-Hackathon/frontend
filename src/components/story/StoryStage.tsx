@@ -5,7 +5,13 @@ const SUGGESTIONS: string[] = [
   "루피가 바베큐를 맛있게 먹는 장면 만들어줘",
 ];
 
-export default function StoryStage({ projectId }: { projectId: number }) {
+export default function StoryStage({
+  projectId,
+  onSuccess,
+}: {
+  projectId: number;
+  onSuccess?: () => void;
+}) {
   const [idea, setIdea] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +25,7 @@ export default function StoryStage({ projectId }: { projectId: number }) {
         { userPrompt: idea },
         {},
       );
+      onSuccess?.();
     } finally {
       setIsLoading(false);
     }

@@ -52,7 +52,7 @@ export default function CreateProjectPage() {
   const renderStageContent = () => {
     switch (activeStep) {
       case "story":
-        return <StoryStage projectId={Number(projectId)} />;
+        return <StoryStage projectId={Number(projectId)} onSuccess={handleNext} />;
       case "image":
         return (
           <ImageStage
