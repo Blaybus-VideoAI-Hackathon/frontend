@@ -11,6 +11,7 @@ import ImageEditStage from "../components/image&video/ImageEditStage";
 import VideoStage from "../components/image&video/VideoStage";
 import VideoMergeStage from "../components/video/VideoMergeStage";
 import { useCutScenes } from "../hooks/useCutScenes";
+import { Navigate, useParams } from "react-router-dom";
 
 type EditingScene = {
   sceneNumber: number;
@@ -18,12 +19,14 @@ type EditingScene = {
   imageSrc: string;
 } | null;
 
-// 추후 프로젝트 생성 api와 연결 작업 예정
-const TEMP_PROJECT_ID = 4;
-
 export default function CreateProjectPage() {
+  const { projectId: projectIdParam } = useParams();
+  const projectId = Number(projectIdParam);
+
   const [activeStep, setActiveStep] = useState<TabId>("story");
   const [editingScene, setEditingScene] = useState<EditingScene>(null);
+
+  const isValidProjectId = Number.isFinite(projectId) && projectId > 0;
 
   const isCutStage = activeStep === "cut";
   const isImageEditing = activeStep === "image" && editingScene !== null;
@@ -42,8 +45,8 @@ export default function CreateProjectPage() {
     handleDeleteScene,
     handleRegenerateScene,
   } = useCutScenes({
-    projectId: TEMP_PROJECT_ID,
-    enabled: isCutStage,
+    projectId,
+    enabled: isValidProjectId && isCutStage,
   });
 
   const currentStepIndex = useMemo(
@@ -75,24 +78,29 @@ export default function CreateProjectPage() {
   const renderStageContent = () => {
     switch (activeStep) {
       case "story":
-        return <StoryStage />;
+        return <StoryStage onSuccess={handleNext} />;
       case "image":
         return (
           <ImageStage
-            projectId={TEMP_PROJECT_ID}
+            projectId={projectId}
             onEnterEditMode={(scene) => {
               setEditingScene(scene);
             }}
           />
         );
       case "video":
-        return <VideoStage projectId={TEMP_PROJECT_ID} />;
+        return <VideoStage projectId={projectId} />;
       case "finish":
         return <VideoMergeStage />;
       default:
         return null;
     }
   };
+
+  // 혹시몰라 되돌아가는 기능 넣었으나 이상하면 빼겠음
+  if (!isValidProjectId) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <main className="min-h-screen bg-black px-8 py-10">
@@ -170,7 +178,7 @@ export default function CreateProjectPage() {
           </>
         )}
 
-        {!isImageEditing && (
+        {!isImageEditing && activeStep !== "story" && (
           <StepNavigation
             canGoPrev={canGoPrev}
             canGoNext={canGoNext}
