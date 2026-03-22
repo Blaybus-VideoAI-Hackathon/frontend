@@ -134,7 +134,7 @@ export default function Sidebar({
   };
 
   const handleProjectList = () => {
-    navigate("/");
+    // 목록 클릭 시 이동 없음
   };
 
   return (
