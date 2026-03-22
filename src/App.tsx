@@ -16,7 +16,7 @@ function App() {
           element={
             <div className="flex h-screen">
               <Sidebar
-                user={{ name: "김유저", email: "user@test-site.ai" }}
+                user={{ name: "user 01" }}
                 onLogout={() => console.log("로그아웃")}
               />
               <main className="flex-1 overflow-auto">
