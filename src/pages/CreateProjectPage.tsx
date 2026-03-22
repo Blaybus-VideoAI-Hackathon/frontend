@@ -174,7 +174,7 @@ export default function CreateProjectPage() {
         ) : (
           <>
             <ProjectCoreToggle />
-            <div className="min-h-[760px]">{renderStageContent()}</div>
+            <div className="flex min-h-190 flex-col">{renderStageContent()}</div>
           </>
         )}
 
