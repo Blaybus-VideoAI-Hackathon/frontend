@@ -44,6 +44,16 @@ const IconFolder = () => (
   </svg>
 );
 
+const IconTrash = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
+    <path d="M9 6V4h6v2" />
+  </svg>
+);
+
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 export default function Sidebar({
@@ -64,7 +74,7 @@ export default function Sidebar({
   // expandedProjectId를 URL에서 직접 초기화 (effect 내 동기 setState 불필요)
   const [expandedProjectId, setExpandedProjectId] = useState<number | null>(currentProjectId);
 
-  // 프로젝트 목록 조회 — effect는 inline, 이벤트 핸들러용은 useCallback
+  // 마운트 시 최초 1회만 프로젝트 목록 조회
   useEffect(() => {
     const load = async () => {
       try {
@@ -75,7 +85,7 @@ export default function Sidebar({
       }
     };
     void load();
-  }, [location.pathname]);
+  }, []);
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -138,6 +148,19 @@ export default function Sidebar({
     // 목록 클릭 시 이동 없음
   };
 
+  const handleDeleteProject = async (projectId: number) => {
+    try {
+      await axiosInstance.delete(`/api/projects/${projectId}`);
+      // navigate 전에 state 업데이트하여 refetch에 의한 덮어쓰기 방지
+      setProjects((prev) => prev.filter((p) => p.id !== projectId));
+      if (currentProjectId === projectId) {
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("프로젝트 삭제 실패:", err);
+    }
+  };
+
   return (
     <aside className={`flex flex-col h-screen bg-[#1e1e24] border-r border-white/8 shrink-0 transition-all duration-300 ${isOpen ? "w-55" : "w-14"}`}>
       {/* 햄버거 메뉴 */}
@@ -183,18 +206,30 @@ export default function Sidebar({
 
               return (
                 <div key={project.id}>
-                  <div
-                    onClick={() => handleToggleProject(project.id)}
-                    className={`
-                      w-full text-left px-3 py-2 rounded-lg text-[13px] font-medium
-                      transition-all duration-150 truncate cursor-pointer
-                      ${isActive
-                        ? "bg-[#4c3f8a] text-white"
-                        : "text-white/55"
-                      }
-                    `}
-                  >
-                    {project.title}
+                  <div className="group relative flex items-center">
+                    <div
+                      onClick={() => handleToggleProject(project.id)}
+                      className={`
+                        flex-1 text-left px-3 py-2 rounded-lg text-[13px] font-medium
+                        transition-all duration-150 truncate cursor-pointer pr-7
+                        ${isActive
+                          ? "bg-[#4c3f8a] text-white"
+                          : "text-white/55"
+                        }
+                      `}
+                    >
+                      {project.title}
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleDeleteProject(project.id);
+                      }}
+                      className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity text-white/40 hover:text-red-400"
+                      aria-label="프로젝트 삭제"
+                    >
+                      <IconTrash />
+                    </button>
                   </div>
 
                   {/* 씬 목록 */}
