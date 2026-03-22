@@ -1,9 +1,5 @@
 import { useState, useRef, type ChangeEvent } from "react";
 import axios from "axios";
-const SUGGESTIONS: string[] = [
-  "조로와 루피가 써니호에서 싸우는 장면 만들어줘",
-  "루피가 바베큐를 맛있게 먹는 장면 만들어줘",
-];
 
 export default function StoryStage({
   projectId,
@@ -37,10 +33,6 @@ export default function StoryStage({
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }
-  };
-
-  const handleSuggestion = (text: string): void => {
-    setIdea(text);
   };
 
   return (
@@ -151,18 +143,6 @@ export default function StoryStage({
         </div>
       </div>
 
-      {/* Suggestion Chips */}
-      <div className="mt-4 flex w-full max-w-215 flex-wrap gap-2.5">
-        {SUGGESTIONS.map((s) => (
-          <button
-            key={s}
-            onClick={() => handleSuggestion(s)}
-            className="whitespace-nowrap rounded-full border border-white/12 bg-transparent px-3.5 py-1.5 text-sm text-gray-400 transition-all hover:border-indigo-500/50 hover:text-indigo-300"
-          >
-            {s}
-          </button>
-        ))}
-      </div>
     </section>
   );
 }
