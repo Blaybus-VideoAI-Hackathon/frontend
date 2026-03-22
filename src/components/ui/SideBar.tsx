@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useModalStore } from "../../store/ModalStore";
 import ProjectCreateModal from "./modals/ProjectCreateModal";
@@ -19,7 +19,6 @@ interface SidebarProps {
     name: string;
     avatarUrl?: string;
   };
-  onLogout?: () => void;
 }
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
@@ -49,55 +48,69 @@ const IconFolder = () => (
 
 export default function Sidebar({
   user = { name: "user 01" },
-  onLogout,
 }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { open } = useModalStore();
 
   const [projects, setProjects] = useState<Project[]>([]);
-  const [expandedProjectId, setExpandedProjectId] = useState<number | null>(null);
   const [scenes, setScenes] = useState<Record<number, Scene[]>>({});
 
   // 현재 URL에서 projectId 추출
   const match = location.pathname.match(/\/projects\/(\d+)/);
   const currentProjectId = match ? Number(match[1]) : null;
 
-  // 프로젝트 목록 조회
-  const fetchProjects = async () => {
+  // expandedProjectId를 URL에서 직접 초기화 (effect 내 동기 setState 불필요)
+  const [expandedProjectId, setExpandedProjectId] = useState<number | null>(currentProjectId);
+
+  // 프로젝트 목록 조회 — effect는 inline, 이벤트 핸들러용은 useCallback
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await axiosInstance.get<{ data: Project[] }>("/api/projects");
+        setProjects(res.data?.data ?? []);
+      } catch {
+        // 조회 실패 시 빈 목록 유지
+      }
+    };
+    void load();
+  }, [location.pathname]);
+
+  const fetchProjects = useCallback(async () => {
     try {
       const res = await axiosInstance.get<{ data: Project[] }>("/api/projects");
-      const list = res.data?.data ?? [];
-      setProjects(list);
+      setProjects(res.data?.data ?? []);
     } catch {
       // 조회 실패 시 빈 목록 유지
     }
-  };
+  }, []);
 
+  // 씬 조회 — effect는 inline, 토글 핸들러용은 useCallback
   useEffect(() => {
-    void fetchProjects();
-  }, [location.pathname]);
-
-  // 현재 프로젝트가 있으면 자동 펼치기
-  useEffect(() => {
-    if (currentProjectId) {
-      setExpandedProjectId(currentProjectId);
-      void fetchScenes(currentProjectId);
-    }
+    if (!currentProjectId) return;
+    const load = async () => {
+      try {
+        const res = await axiosInstance.get<{ data: Scene[] }>(
+          `/api/scenes/projects/${currentProjectId}/scenes`,
+        );
+        setScenes((prev) => ({ ...prev, [currentProjectId]: res.data?.data ?? [] }));
+      } catch {
+        setScenes((prev) => ({ ...prev, [currentProjectId]: [] }));
+      }
+    };
+    void load();
   }, [currentProjectId]);
 
-  const fetchScenes = async (projectId: number) => {
-    if (scenes[projectId]) return;
+  const fetchScenes = useCallback(async (projectId: number) => {
     try {
       const res = await axiosInstance.get<{ data: Scene[] }>(
         `/api/scenes/projects/${projectId}/scenes`,
       );
-      const list = res.data?.data ?? [];
-      setScenes((prev) => ({ ...prev, [projectId]: list }));
+      setScenes((prev) => ({ ...prev, [projectId]: res.data?.data ?? [] }));
     } catch {
       setScenes((prev) => ({ ...prev, [projectId]: [] }));
     }
-  };
+  }, []);
 
   const handleToggleProject = (projectId: number) => {
     if (expandedProjectId === projectId) {
@@ -212,15 +225,6 @@ export default function Sidebar({
           </div>
         )}
         <span className="text-[13px] text-white/70 truncate">{user.name}</span>
-        {onLogout && (
-          <button
-            onClick={onLogout}
-            className="ml-auto text-white/25 hover:text-white/60 transition-colors text-xs"
-            aria-label="로그아웃"
-          >
-            ✕
-          </button>
-        )}
       </div>
     </aside>
   );
