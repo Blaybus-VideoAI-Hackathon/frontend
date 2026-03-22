@@ -26,7 +26,7 @@ export async function createPlan({
   userPrompt: string;
 }) {
   const response = await axiosInstance.post<
-    ApiResponse<ProjectPlanResponse>
+    ApiResponse<ProjectPlanResponse[]>
   >(`/api/projects/${projectId}/plans`, { userPrompt });
   return response.data;
 }

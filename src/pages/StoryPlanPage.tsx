@@ -1,19 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import { getPlanHistory, type ProjectPlanResponse } from "../api/planApi";
 import Button from "../components/ui/Button";
-
-interface ProjectPlanResponse {
-  title: string;
-  theme: string;
-  mainCharacter: string;
-  background: string;
-  timeOfDay: string;
-  mood: string;
-  style: string;
-  scenes: { sceneNumber: number; description: string; imagePrompt: string }[];
-  createdAt: string;
-}
 
 interface StoryPlan {
   id: string;
@@ -49,35 +37,43 @@ export default function StoryPlanPage({ onPrev, onNext }: StoryPlanPageProps) {
   const [plans, setPlans] = useState<StoryPlan[]>([]);
   const [selectedId, setSelectedId] = useState<string>("A");
   const [isLoading, setIsLoading] = useState(true);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (!projectId) return;
-    let cancelled = false;
-    axios
-      .get<{ data: ProjectPlanResponse[] }>(
-        `https://hdb-backend.onrender.com/api/projects/${projectId}/plans`,
-      )
-      .then((res) => {
-        if (cancelled) return;
-        const fetched = res.data.data.slice(0, 3).map(mapToPlan);
+
+    const fetchPlans = async () => {
+      try {
+        const result = await getPlanHistory({ projectId });
+const data = result.data;
+        if (!Array.isArray(data) || data.length === 0) return;
+        // 첫 번째 항목의 mainCharacter가 null이면 아직 생성 중
+        if (data[0].mainCharacter === null) return;
+
+        const fetched = data.slice(0, 3).map(mapToPlan);
         setPlans(fetched);
-        if (fetched.length > 0) setSelectedId(fetched[0].id);
+        setSelectedId(fetched[0]?.id ?? "A");
         setIsLoading(false);
-      })
-      .catch(() => {
-        if (!cancelled) setIsLoading(false);
-      });
+
+        if (intervalRef.current) clearInterval(intervalRef.current);
+      } catch {
+        // 재시도
+      }
+    };
+
+    void fetchPlans();
+    intervalRef.current = setInterval(() => void fetchPlans(), 3000);
+
     return () => {
-      cancelled = true;
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [projectId]);
 
   return (
     <div className="flex flex-col h-full bg-[#1a1a1f] p-6">
-      {/* 카드 목록 */}
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center text-white/50">
-          기획안을 불러오는 중...
+          기획안을 생성하는 중...
         </div>
       ) : (
         <div className="flex gap-4 flex-1">
@@ -94,7 +90,6 @@ export default function StoryPlanPage({ onPrev, onNext }: StoryPlanPageProps) {
                       : "bg-[#2a2a2f] border-transparent hover:border-[#7c5cbf]/40"
                   }`}
               >
-                {/* 헤더 */}
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-white font-semibold text-base">
                     {plan.title}
@@ -111,7 +106,6 @@ export default function StoryPlanPage({ onPrev, onNext }: StoryPlanPageProps) {
                   </span>
                 </div>
 
-                {/* 내용 */}
                 <div className="flex flex-col gap-3">
                   <div>
                     <p className="text-white/50 text-xs mb-0.5">메인 캐릭터</p>
@@ -136,7 +130,6 @@ export default function StoryPlanPage({ onPrev, onNext }: StoryPlanPageProps) {
         </div>
       )}
 
-      {/* 하단 버튼 */}
       <div className="flex justify-end gap-2 mt-6">
         <Button variant="secondary" onClick={onPrev}>
           이전
