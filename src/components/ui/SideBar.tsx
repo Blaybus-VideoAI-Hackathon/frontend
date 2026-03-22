@@ -198,8 +198,8 @@ export default function Sidebar({
                     <div
                       onClick={() => handleToggleProject(project.id)}
                       className={`
-                        flex-1 text-left px-3 py-2 rounded-lg text-[13px] font-medium
-                        transition-all duration-150 truncate cursor-pointer pr-7
+                        flex-1 text-left pl-[26px] pr-7 py-2 rounded-lg text-[13px] font-medium
+                        transition-all duration-150 truncate cursor-pointer
                         ${isActive
                           ? "bg-[#4c3f8a] text-white"
                           : "text-white/55"
