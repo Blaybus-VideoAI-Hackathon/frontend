@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Button from "./Button";
+import Button from "../components/ui/Button";
 
 interface StoryPlan {
   id: string;
@@ -45,12 +45,12 @@ const STORY_PLANS: StoryPlan[] = [
   },
 ];
 
-interface StoryPlanViewProps {
+interface StoryPlanPageProps {
   onPrev?: () => void;
   onNext?: (selectedPlan: StoryPlan) => void;
 }
 
-export default function StoryPlanView({ onPrev, onNext }: StoryPlanViewProps) {
+export default function StoryPlanPage({ onPrev, onNext }: StoryPlanPageProps) {
   const [selectedId, setSelectedId] = useState<string>("A");
 
   const selectedPlan = STORY_PLANS.find((p) => p.id === selectedId)!;
