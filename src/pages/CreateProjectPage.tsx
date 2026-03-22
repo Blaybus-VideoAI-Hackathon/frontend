@@ -10,6 +10,7 @@ import AiChatBox from "../components/project-new/AiChatBox";
 import ImageEditStage from "../components/image&video/ImageEditStage";
 import VideoStage from "../components/image&video/VideoStage";
 import VideoMergeStage from "../components/video/VideoMergeStage";
+import { useCutScenes } from "../hooks/useCutScenes";
 
 type EditingScene = {
   sceneNumber: number;
@@ -17,9 +18,33 @@ type EditingScene = {
   imageSrc: string;
 } | null;
 
+// 추후 프로젝트 생성 api와 연결 작업 예정
+const TEMP_PROJECT_ID = 4;
+
 export default function CreateProjectPage() {
   const [activeStep, setActiveStep] = useState<TabId>("story");
   const [editingScene, setEditingScene] = useState<EditingScene>(null);
+
+  const isCutStage = activeStep === "cut";
+  const isImageEditing = activeStep === "image" && editingScene !== null;
+
+  const {
+    scenes,
+    selectedScene,
+    selectedSceneId,
+    selectedSceneNumber,
+    loading,
+    error,
+    isDeleting,
+    regeneratingSceneId,
+    initialize,
+    setSelectedSceneId,
+    handleDeleteScene,
+    handleRegenerateScene,
+  } = useCutScenes({
+    projectId: TEMP_PROJECT_ID,
+    enabled: isCutStage,
+  });
 
   const currentStepIndex = useMemo(
     () => STEP_ORDER.indexOf(activeStep),
@@ -54,22 +79,20 @@ export default function CreateProjectPage() {
       case "image":
         return (
           <ImageStage
+            projectId={TEMP_PROJECT_ID}
             onEnterEditMode={(scene) => {
               setEditingScene(scene);
             }}
           />
         );
       case "video":
-        return <VideoStage />;
+        return <VideoStage projectId={TEMP_PROJECT_ID} />;
       case "finish":
         return <VideoMergeStage />;
       default:
         return null;
     }
   };
-
-  const isCutStage = activeStep === "cut";
-  const isImageEditing = activeStep === "image" && editingScene !== null;
 
   return (
     <main className="min-h-screen bg-black px-8 py-10">
@@ -107,11 +130,37 @@ export default function CreateProjectPage() {
           <section className="grid items-stretch grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_460px]">
             <div className="flex min-w-0 flex-col gap-4">
               <ProjectCoreToggle />
-              <CutStage />
+              <CutStage
+                scenes={scenes}
+                selectedScene={selectedScene}
+                selectedSceneId={selectedSceneId}
+                selectedSceneNumber={selectedSceneNumber}
+                loading={loading}
+                error={error}
+                isDeleting={isDeleting}
+                regeneratingSceneId={regeneratingSceneId}
+                onRetryInitialize={() => {
+                  void initialize();
+                }}
+                onSelectScene={setSelectedSceneId}
+                onDeleteScene={(sceneId) => {
+                  void handleDeleteScene(sceneId);
+                }}
+                onRegenerateScene={(sceneId) => {
+                  void handleRegenerateScene(sceneId);
+                }}
+              />
             </div>
 
             <div className="min-w-0 h-full">
-              <AiChatBox />
+              <AiChatBox
+                disabled={!selectedSceneId}
+                isSubmitting={regeneratingSceneId !== null}
+                onSendMessage={async (message) => {
+                  if (!selectedSceneId) return;
+                  await handleRegenerateScene(selectedSceneId, message);
+                }}
+              />
             </div>
           </section>
         ) : (

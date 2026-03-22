@@ -6,12 +6,11 @@ type AiChatMessage = {
   text: string;
 };
 
-const initialMessages: AiChatMessage[] = [
-  {
-    id: 1,
-    text: "조명을 다르게 바꿔줘",
-  },
-];
+type AiChatBoxProps = {
+  disabled?: boolean;
+  isSubmitting?: boolean;
+  onSendMessage?: (message: string) => Promise<void> | void;
+};
 
 function UserRequestBubble({ text }: { text: string }) {
   return (
@@ -23,17 +22,30 @@ function UserRequestBubble({ text }: { text: string }) {
   );
 }
 
-export default function AiChatBox() {
-  const [messages, setMessages] = useState<AiChatMessage[]>(initialMessages);
+export default function AiChatBox({
+  disabled = false,
+  isSubmitting = false,
+  onSendMessage,
+}: AiChatBoxProps) {
+  const [messages, setMessages] = useState<AiChatMessage[]>([]);
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = async (message: string) => {
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage || disabled || isSubmitting) return;
+
     setMessages((prev) => [
       ...prev,
       {
         id: Date.now(),
-        text: message,
+        text: trimmedMessage,
       },
     ]);
+
+    try {
+      await onSendMessage?.(trimmedMessage);
+    } catch (error) {
+      console.error("AI 수정 요청 실패:", error);
+    }
   };
 
   return (
@@ -43,9 +55,17 @@ export default function AiChatBox() {
       </div>
 
       <div className="flex flex-1 flex-col gap-4">
-        {messages.map((message) => (
+        {messages?.map((message) => (
           <UserRequestBubble key={message.id} text={message.text} />
         ))}
+      </div>
+
+      <div className="mt-4 text-[13px] text-[rgba(255,255,255,0.48)]">
+        {disabled
+          ? "선택된 컷씬이 없습니다."
+          : isSubmitting
+            ? "선택한 컷씬 정보를 AI가 다시 구성하고 있습니다..."
+            : ""}
       </div>
 
       <div className="mt-8">

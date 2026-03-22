@@ -10,7 +10,7 @@ export type SceneMediaItem = {
 
 type SceneMediaListBoxProps = {
   items: SceneMediaItem[];
-  selectedSceneId: number;
+  selectedSceneId: number | null;
   mode: "image" | "video";
 
   onSelectScene: (sceneId: number) => void;

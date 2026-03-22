@@ -1,43 +1,9 @@
-import { useMemo, useState } from "react";
-import ExampleSrc from "../../assets/example.png";
-import type { SceneMediaItem } from "./SceneMediaListBox";
 import SceneMediaListBox from "./SceneMediaListBox";
 import SceneMediaPreview from "./SceneMediaPreview";
-
-const initialSceneImages: SceneMediaItem[] = [
-  {
-    id: 1,
-    title: "두 캐릭터 대치",
-    status: "done",
-    thumbnailSrc: ExampleSrc,
-  },
-  {
-    id: 2,
-    title: "아카이누 공격",
-    status: "generating",
-    thumbnailSrc: ExampleSrc,
-  },
-  {
-    id: 3,
-    title: "상크스 방어",
-    status: "generating",
-    thumbnailSrc: ExampleSrc,
-  },
-  {
-    id: 4,
-    title: "격돌",
-    status: "generating",
-    thumbnailSrc: ExampleSrc,
-  },
-  {
-    id: 5,
-    title: "전장충격파",
-    status: "generating",
-    thumbnailSrc: ExampleSrc,
-  },
-];
+import { useImageScenes } from "../../hooks/useImageScenes";
 
 type ImageStageProps = {
+  projectId: number;
   onEnterEditMode?: (scene: {
     sceneNumber: number;
     title: string;
@@ -45,39 +11,82 @@ type ImageStageProps = {
   }) => void;
 };
 
-export default function ImageStage({ onEnterEditMode }: ImageStageProps) {
-  const [sceneImages, setSceneImages] =
-    useState<SceneMediaItem[]>(initialSceneImages);
-  const [selectedSceneId, setSelectedSceneId] = useState<number>(
-    initialSceneImages[0]?.id ?? 1,
+function LoadingPanel() {
+  return (
+    <section className="grid items-start grid-cols-1 gap-4 md:grid-cols-[450px_minmax(0,1fr)]">
+      <div className="rounded-[8px] bg-gray-900 p-5">
+        <div className="mb-5 text-[18px] font-bold leading-none text-white">
+          컷 구성 (스토리 흐름)
+        </div>
+
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-[170px] w-full animate-pulse rounded-[8px] bg-[rgba(255,255,255,0.06)]"
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-[8px] bg-gray-900 p-6">
+        <div className="flex h-[620px] items-center justify-center text-[18px] text-[rgba(255,255,255,0.72)]">
+          이미지 목록을 불러오는 중입니다...
+        </div>
+      </div>
+    </section>
   );
+}
 
-  const selectedScene = useMemo(() => {
-    return (
-      sceneImages.find((scene) => scene.id === selectedSceneId) ??
-      sceneImages[0]
-    );
-  }, [sceneImages, selectedSceneId]);
+function ErrorPanel({
+  message,
+  onRetry,
+}: {
+  message: string;
+  onRetry: () => void;
+}) {
+  return (
+    <section className="rounded-[8px] bg-gray-900 px-7 py-10 text-center">
+      <div className="text-[18px] font-semibold text-white">{message}</div>
+      <button
+        type="button"
+        onClick={onRetry}
+        className="mt-5 rounded-[8px] bg-[#5C4DFF] px-6 py-3 text-[16px] font-semibold text-white transition hover:bg-[#4f41ee]"
+      >
+        다시 시도
+      </button>
+    </section>
+  );
+}
 
-  const selectedSceneNumber = useMemo(() => {
-    return sceneImages.findIndex((scene) => scene.id === selectedSceneId) + 1;
-  }, [sceneImages, selectedSceneId]);
-
-  const handleRegenerateScene = (sceneId: number) => {
-    console.log("이미지 재생성:", sceneId);
-
-    setSceneImages((prev) =>
-      prev.map((scene) =>
-        scene.id === sceneId ? { ...scene, status: "generating" } : scene,
-      ),
-    );
-  };
+export default function ImageStage({
+  projectId,
+  onEnterEditMode,
+}: ImageStageProps) {
+  const {
+    items,
+    selectedScene,
+    selectedSceneId,
+    selectedSceneNumber,
+    loading,
+    error,
+    initialize,
+    setSelectedSceneId,
+  } = useImageScenes({
+    projectId,
+  });
 
   const handleEditScene = (sceneId: number) => {
-    const targetIndex = sceneImages.findIndex((scene) => scene.id === sceneId);
-    const targetScene = sceneImages[targetIndex];
+    const targetIndex = items.findIndex((scene) => scene.id === sceneId);
+    const targetScene = items[targetIndex];
 
-    if (!targetScene || !targetScene.thumbnailSrc) return;
+    if (
+      !targetScene ||
+      !targetScene.thumbnailSrc ||
+      targetScene.status !== "done"
+    ) {
+      return;
+    }
 
     onEnterEditMode?.({
       sceneNumber: targetIndex + 1,
@@ -86,18 +95,52 @@ export default function ImageStage({ onEnterEditMode }: ImageStageProps) {
     });
   };
 
-  if (!selectedScene || !selectedScene.thumbnailSrc) return null;
+  if (loading && items.length === 0) {
+    return <LoadingPanel />;
+  }
+
+  if (error && items.length === 0) {
+    return <ErrorPanel message={error} onRetry={() => void initialize()} />;
+  }
+
+  if (!selectedScene || !selectedSceneId) {
+    return (
+      <section className="rounded-[8px] bg-gray-900 px-7 py-10 text-center">
+        <div className="text-[18px] text-[rgba(255,255,255,0.72)]">
+          생성된 컷씬이 없습니다.
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="grid items-start grid-cols-1 gap-4 md:grid-cols-[450px_minmax(0,1fr)]">
-      <SceneMediaListBox
-        items={sceneImages}
-        selectedSceneId={selectedSceneId}
-        mode="image"
-        onSelectScene={setSelectedSceneId}
-        onRegenerateScene={handleRegenerateScene}
-        onEditScene={handleEditScene}
-      />
+      <div className="flex flex-col gap-3">
+        {error && (
+          <div className="rounded-[8px] border border-red-500/40 bg-red-500/10 px-4 py-3 text-[14px] text-red-200">
+            {error}
+          </div>
+        )}
+
+        <SceneMediaListBox
+          items={items}
+          selectedSceneId={selectedSceneId}
+          mode="image"
+          onSelectScene={(sceneId) => {
+            const target = items.find((item) => item.id === sceneId);
+            if (!target) return;
+
+            if (
+              target.status === "done" ||
+              target.status === "generating" ||
+              target.status === "failed"
+            ) {
+              setSelectedSceneId(sceneId);
+            }
+          }}
+          onEditScene={handleEditScene}
+        />
+      </div>
 
       <SceneMediaPreview
         sceneNumber={selectedSceneNumber}
