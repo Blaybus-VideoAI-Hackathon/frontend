@@ -1,9 +1,37 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import Button from "../components/ui/Button";
+import { mergeProjectVideos, getFinalVideo } from "../api/videoApi";
 
 export default function VideoCompletePage() {
+  const { projectId } = useParams<{ projectId: string }>();
   const [isPlaying, setIsPlaying] = useState(false);
   const [storyOpen, setStoryOpen] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  async function handleDownload() {
+    if (!projectId) return;
+    setIsDownloading(true);
+    try {
+      await mergeProjectVideos(Number(projectId));
+      const finalRes = await getFinalVideo(Number(projectId));
+      const videoUrl = finalRes.data?.finalVideoUrl;
+      if (!videoUrl) throw new Error("최종 영상 URL을 가져올 수 없습니다.");
+
+      const a = document.createElement("a");
+      a.href = videoUrl;
+      a.download = `project_${projectId}.mp4`;
+      a.target = "_blank";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("다운로드 실패:", err);
+      alert("영상 다운로드에 실패했습니다. 다시 시도해 주세요.");
+    } finally {
+      setIsDownloading(false);
+    }
+  }
 
   const storyText =
     "황소만한 전마의 발자국 소리가 귀를 가득 채우는 가운데, 전쟁의 흔적을 이비밖 스나미의 다가오고 있었다. 냉혹한 진영공의 눈빛이 창두는 가득에 빛에 해처럼 상교소소 초원의 한가락에서 사 있고, 그 밖에는해는 거대한 희잡들을 훑기이며 마이하는 긴 전향의 전이라 나를 지 사람/ 사이에서는 높지작! 들지작? 성이다는나이나 산전인 의 오고, 그 담처 삶으로, 전혀 창자들이 간절의 끊으라 그의 이기를 기어이며 표면이 고걸 성공스를 불에 취기라고, 그 소현 이르오는 끊으들이 복도으로 몰를 들이 들을 걸었을 막이다는, 마그리마 태기의 인이 창전으로 흩은좌며 높다낮 복잡 좌피의 기세가 취히들을 이른다고, 전경의 마기 육의 직면 한을가서야 마유가 두 잡지 없이 이렇이하는 누른들이 두 개의 한 충동을 불속의 아오란 증류를 용이는 한다.";
@@ -41,13 +69,19 @@ export default function VideoCompletePage() {
 
       {/* 버튼 그룹 */}
       <div className="flex gap-3 mb-8 flex-wrap justify-center">
-        <Button variant="secondary" size="md" className="gap-2">
+        <Button
+          variant="secondary"
+          size="md"
+          className="gap-2"
+          onClick={handleDownload}
+          disabled={isDownloading}
+        >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
-          영상 다운로드(mp4)
+          {isDownloading ? "병합 중..." : "영상 다운로드(mp4)"}
         </Button>
         <Button variant="secondary" size="md" className="gap-2">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
