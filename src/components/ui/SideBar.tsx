@@ -153,9 +153,7 @@ export default function Sidebar({
       await axiosInstance.delete(`/api/projects/${projectId}`);
       // navigate 전에 state 업데이트하여 refetch에 의한 덮어쓰기 방지
       setProjects((prev) => prev.filter((p) => p.id !== projectId));
-      if (currentProjectId === projectId) {
-        navigate("/");
-      }
+      navigate("/");
     } catch (err) {
       console.error("프로젝트 삭제 실패:", err);
     }
