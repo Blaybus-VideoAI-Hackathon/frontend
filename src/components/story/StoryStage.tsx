@@ -1,13 +1,9 @@
 import { useState, useRef, type ChangeEvent } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
-export default function StoryStage({
-  projectId,
-  onSuccess,
-}: {
-  projectId: number;
-  onSuccess?: () => void;
-}) {
+export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
+  const { projectId } = useParams<{ projectId: string }>();
   const [idea, setIdea] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import SceneCard from "../ui/SceneCard";
 import type { SelectOption } from "../ui/DropdownSelect";
@@ -48,7 +49,8 @@ function SceneConnector() {
 // ──────────────────────────────────────────
 // VideoMergeStage
 // ──────────────────────────────────────────
-export default function VideoMergeStage({ projectId }: { projectId: number }) {
+export default function VideoMergeStage() {
+  const { projectId } = useParams<{ projectId: string }>();
   const [transitions, setTransitions] = useState<Record<number, string>>({
     1: "cut",
     2: "cross-dissolve",
