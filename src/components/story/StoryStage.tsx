@@ -32,6 +32,13 @@ export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
     }
   };
 
+  const handleImageRemove = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <section className="flex flex-1 flex-col items-center rounded-2xl bg-[#17181C] px-6 py-10">
       {/* Headline */}
@@ -45,30 +52,43 @@ export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
 
       {/* Image Upload Card */}
       <div className="mb-4 flex w-full flex-1 items-center justify-center rounded-2xl border border-white/6 bg-[#161618] px-6 py-9">
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          className="flex h-44 w-56 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-[1.5px] border-dashed border-white/12 bg-[#1e1e21] transition-colors hover:border-indigo-500/50"
-        >
-          {previewUrl ? (
-            <img
-              src={previewUrl}
-              alt="preview"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="rgba(255,255,255,0.25)"
-              strokeWidth="1.5"
+        <div className="relative">
+          {previewUrl && (
+            <button
+              onClick={handleImageRemove}
+              className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#2a2a2e] border border-white/15 text-gray-400 transition-colors hover:bg-red-500/80 hover:text-white"
             >
-              <rect x="3" y="3" width="18" height="18" rx="3" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <path d="M21 15l-5-5L5 21" />
-            </svg>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           )}
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className="flex h-44 w-56 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-[1.5px] border-dashed border-white/12 bg-[#1e1e21] transition-colors hover:border-indigo-500/50"
+          >
+            {previewUrl ? (
+              <img
+                src={previewUrl}
+                alt="preview"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="rgba(255,255,255,0.25)"
+                strokeWidth="1.5"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <path d="M21 15l-5-5L5 21" />
+              </svg>
+            )}
+          </div>
         </div>
 
         {!previewUrl && (
