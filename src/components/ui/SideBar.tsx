@@ -45,7 +45,7 @@ const IconFolder = () => (
 );
 
 const IconTrash = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="3 6 5 6 21 6" />
     <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
     <path d="M10 11v6" />
@@ -225,7 +225,7 @@ export default function Sidebar({
                         e.stopPropagation();
                         void handleDeleteProject(project.id);
                       }}
-                      className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity text-white/40 hover:text-red-400"
+                      className="absolute right-1.5 p-1 opacity-0 group-hover:opacity-100 transition-opacity text-white/40 hover:text-red-400"
                       aria-label="프로젝트 삭제"
                     >
                       <IconTrash />
