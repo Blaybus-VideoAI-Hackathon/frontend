@@ -1,23 +1,24 @@
 import { useState, useRef, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import { createPlan } from "../../api/planApi";
 
 export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
   const { projectId } = useParams<{ projectId: string }>();
   const [idea, setIdea] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleSubmit = async () => {
-    if (!idea.trim() || isLoading) return;
+    if (!idea.trim() || isLoading || !projectId) return;
     setIsLoading(true);
+    setError(null);
     try {
-      await axios.post(
-        `https://hdb-backend.onrender.com/api/projects/${projectId}/plans`,
-        { userPrompt: idea },
-        {},
-      );
+      await createPlan({ projectId, userPrompt: idea });
       onSuccess?.();
+    } catch {
+      setError("기획 생성에 실패했습니다. 다시 시도해 주세요.");
     } finally {
       setIsLoading(false);
     }
@@ -139,6 +140,9 @@ export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
         </div>
       </div>
 
+      {error && (
+        <p className="mt-3 text-center text-sm text-red-400">{error}</p>
+      )}
     </section>
   );
 }
