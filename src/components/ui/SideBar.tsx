@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useModalStore } from "../../store/ModalStore";
-import ProjectCreateModal from "./modals/ProjectCreateModal";
 import { axiosInstance } from "../../api/axiosInstance";
 
 interface Project {
@@ -61,7 +59,6 @@ export default function Sidebar({
 }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { open } = useModalStore();
 
   const [isOpen, setIsOpen] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -134,14 +131,7 @@ export default function Sidebar({
   };
 
   const handleCreateProject = () => {
-    open(
-      <ProjectCreateModal
-        onComplete={(projectId) => {
-          void fetchProjects();
-          navigate(`/projects/${projectId}`);
-        }}
-      />,
-    );
+    navigate("/");
   };
 
   const handleProjectList = () => {
