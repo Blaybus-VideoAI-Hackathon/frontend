@@ -22,3 +22,9 @@ export type GetProjectImagesResponse = {
   message: string;
   data: SceneImage[];
 };
+
+export type EditSceneImageResponse = {
+  success: boolean;
+  message: string;
+  data: SceneImage;
+};

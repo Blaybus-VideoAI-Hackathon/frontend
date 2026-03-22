@@ -68,7 +68,7 @@ export default function AiChatBox({
             : ""}
       </div>
 
-      <div className="mt-8">
+      <div className="mt-3">
         <ChatInputBox onSend={handleSendMessage} />
       </div>
     </section>

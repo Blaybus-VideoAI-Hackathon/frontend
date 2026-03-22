@@ -1,8 +1,12 @@
 import ImageEditCanvas from "./ImageEditCanvas";
 import AiChatBox from "../project-new/AiChatBox";
 import { useState } from "react";
+import { editSceneImageWithAi } from "../../api/imageApi";
 
 type ImageEditStageProps = {
+  projectId: number;
+  sceneId: number;
+  imageId: number;
   sceneNumber: number;
   title: string;
   imageSrc: string;
@@ -11,6 +15,9 @@ type ImageEditStageProps = {
 };
 
 export default function ImageEditStage({
+  projectId,
+  sceneId,
+  imageId,
   sceneNumber,
   title,
   imageSrc,
@@ -21,6 +28,8 @@ export default function ImageEditStage({
   const [isDirty, setIsDirty] = useState(false);
   // key를 바꾸면 ImageEditCanvas가 remount되어 상태 초기화
   const [canvasKey, setCanvasKey] = useState(0);
+  const [currentImageId, setCurrentImageId] = useState(imageId);
+  const [isAiSubmitting, setIsAiSubmitting] = useState(false);
 
   const handleCancelEdit = () => {
     setEditedImageSrc(imageSrc);
@@ -31,6 +40,27 @@ export default function ImageEditStage({
 
   const handleCompleteEdit = () => {
     onCompleteEdit?.();
+  };
+
+  const handleAiEditRequest = async (userEditText: string) => {
+    setIsAiSubmitting(true);
+    try {
+      const response = await editSceneImageWithAi({
+        projectId,
+        sceneId,
+        imageId: currentImageId,
+        userEditText,
+      });
+
+      const { editedImageUrl, id } = response.data;
+      if (editedImageUrl) {
+        setEditedImageSrc(editedImageUrl);
+        setCanvasKey((k) => k + 1);
+      }
+      setCurrentImageId(id);
+    } finally {
+      setIsAiSubmitting(false);
+    }
   };
 
   return (
@@ -73,7 +103,10 @@ export default function ImageEditStage({
       </div>
 
       <div className="min-w-0">
-        <AiChatBox />
+        <AiChatBox
+          isSubmitting={isAiSubmitting}
+          onSendMessage={handleAiEditRequest}
+        />
       </div>
     </section>
   );
