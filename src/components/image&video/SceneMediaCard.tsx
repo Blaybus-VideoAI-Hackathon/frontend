@@ -34,7 +34,7 @@ function StatusText({
 }) {
   if (status === "done") {
     return (
-      <div className="flex items-center gap-1 text-[14px] font-medium text-[#A89CFF]">
+      <div className="flex items-center gap-1 text-[14px] font-medium text-[#A89CFF] mr-3 whitespace-nowrap">
         생성 완료
         <img src={DoneIcon} alt="" className="h-4 w-4 object-contain" />
       </div>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import StepTabs from "../components/project-new/StepTabs";
 import ProjectCoreToggle from "../components/project-new/ProjectCoreToggle";
 import StepNavigation from "../components/project-new/StepNavigation";
@@ -11,7 +11,12 @@ import ImageEditStage from "../components/image&video/ImageEditStage";
 import VideoStage from "../components/image&video/VideoStage";
 import VideoMergeStage from "../components/video/VideoMergeStage";
 import { useCutScenes } from "../hooks/useCutScenes";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
+import {
+  getProjectPlans,
+  getProjectPlanningSummary,
+  type ProjectPlanningSummary,
+} from "../api/planApi";
 
 type EditingScene = {
   sceneNumber: number;
@@ -23,14 +28,26 @@ type EditingScene = {
 
 export default function CreateProjectPage() {
   const { projectId: projectIdParam } = useParams();
+  const location = useLocation();
+
   const projectId = Number(projectIdParam);
+  const routeState = location.state as { projectTitle?: string } | null;
+  const projectTitle = routeState?.projectTitle ?? "파일명";
 
   const [activeStep, setActiveStep] = useState<TabId>("story");
   const [editingScene, setEditingScene] = useState<EditingScene>(null);
 
+  const [hasStoryPlans, setHasStoryPlans] = useState(false);
+  const [plansLoading, setPlansLoading] = useState(false);
+
+  const [planningSummary, setPlanningSummary] =
+    useState<ProjectPlanningSummary | null>(null);
+  const [planningSummaryLoading, setPlanningSummaryLoading] = useState(false);
+
   const isValidProjectId = Number.isFinite(projectId) && projectId > 0;
 
   const isCutStage = activeStep === "cut";
+  const isStoryStage = activeStep === "story";
   const isImageEditing = activeStep === "image" && editingScene !== null;
 
   const {
@@ -51,6 +68,76 @@ export default function CreateProjectPage() {
     enabled: isValidProjectId && isCutStage,
   });
 
+  useEffect(() => {
+    setActiveStep("story");
+    setEditingScene(null);
+  }, [location.key]);
+
+  useEffect(() => {
+    if (!isValidProjectId) return;
+    if (!isStoryStage) return;
+
+    let mounted = true;
+
+    const fetchPlans = async () => {
+      setPlansLoading(true);
+
+      try {
+        const response = await getProjectPlans({ projectId });
+        const plans = response.data ?? [];
+
+        if (!mounted) return;
+        setHasStoryPlans(plans.length > 0);
+      } catch (err) {
+        console.error("기획 이력 조회 실패:", err);
+        if (!mounted) return;
+        setHasStoryPlans(false);
+      } finally {
+        if (mounted) {
+          setPlansLoading(false);
+        }
+      }
+    };
+
+    void fetchPlans();
+
+    return () => {
+      mounted = false;
+    };
+  }, [isStoryStage, isValidProjectId, projectId]);
+
+  useEffect(() => {
+    if (!isValidProjectId) return;
+    if (isStoryStage) return;
+
+    let mounted = true;
+
+    const fetchPlanningSummary = async () => {
+      setPlanningSummaryLoading(true);
+
+      try {
+        const response = await getProjectPlanningSummary({ projectId });
+
+        if (!mounted) return;
+        setPlanningSummary(response.data ?? null);
+      } catch (err) {
+        console.error("프로젝트 핵심요소 조회 실패:", err);
+        if (!mounted) return;
+        setPlanningSummary(null);
+      } finally {
+        if (mounted) {
+          setPlanningSummaryLoading(false);
+        }
+      }
+    };
+
+    void fetchPlanningSummary();
+
+    return () => {
+      mounted = false;
+    };
+  }, [isStoryStage, isValidProjectId, projectId, hasStoryPlans]);
+
   const currentStepIndex = useMemo(
     () => STEP_ORDER.indexOf(activeStep),
     [activeStep],
@@ -69,6 +156,11 @@ export default function CreateProjectPage() {
     setActiveStep(STEP_ORDER[currentStepIndex + 1]);
   };
 
+  const handleStorySuccess = () => {
+    setHasStoryPlans(true);
+    handleNext();
+  };
+
   const handleCancelImageEdit = () => {
     setEditingScene(null);
   };
@@ -80,7 +172,7 @@ export default function CreateProjectPage() {
   const renderStageContent = () => {
     switch (activeStep) {
       case "story":
-        return <StoryStage onSuccess={handleNext} />;
+        return <StoryStage key={location.key} onSuccess={handleStorySuccess} />;
       case "image":
         return (
           <ImageStage
@@ -99,10 +191,12 @@ export default function CreateProjectPage() {
     }
   };
 
-  // 혹시몰라 되돌아가는 기능 넣었으나 이상하면 빼겠음
   if (!isValidProjectId) {
     return <Navigate to="/" replace />;
   }
+
+  const shouldShowStepNavigation =
+    !isImageEditing && (!isStoryStage || (!plansLoading && hasStoryPlans));
 
   return (
     <main className="min-h-screen bg-black px-8 py-10">
@@ -110,18 +204,9 @@ export default function CreateProjectPage() {
         {!isImageEditing && (
           <>
             <div className="flex items-center gap-2">
-              <div className="text-[24px] font-bold text-white">파일명</div>
-              <svg
-                className="h-6 w-6 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
+              <div className="text-[24px] font-bold text-white">
+                {projectTitle}
+              </div>
             </div>
 
             <StepTabs activeTab={activeStep} />
@@ -142,7 +227,10 @@ export default function CreateProjectPage() {
         ) : isCutStage ? (
           <section className="grid items-stretch grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_460px]">
             <div className="flex min-w-0 flex-col gap-4">
-              <ProjectCoreToggle />
+              <ProjectCoreToggle
+                summary={planningSummary}
+                loading={planningSummaryLoading}
+              />
               <CutStage
                 scenes={scenes}
                 selectedScene={selectedScene}
@@ -178,23 +266,19 @@ export default function CreateProjectPage() {
           </section>
         ) : (
           <>
-            <ProjectCoreToggle />
+            {activeStep !== "story" && (
+              <ProjectCoreToggle
+                summary={planningSummary}
+                loading={planningSummaryLoading}
+              />
+            )}
             <div className="flex min-h-190 flex-col">
               {renderStageContent()}
             </div>
           </>
         )}
-        {/* 특정 프로젝트 테스트용 */}
-        {/* {!isImageEditing && (
-          <StepNavigation
-            canGoPrev={canGoPrev}
-            canGoNext={canGoNext}
-            onPrev={handlePrev}
-            onNext={handleNext}
-          />
-        )} */}
 
-        {!isImageEditing && activeStep !== "story" && (
+        {shouldShowStepNavigation && (
           <StepNavigation
             canGoPrev={canGoPrev}
             canGoNext={canGoNext}

@@ -8,7 +8,15 @@ export default function MainPage() {
   const navigate = useNavigate();
 
   const handleCreate = () => {
-    open(<ProjectCreateModal onComplete={(projectId) => navigate(`/projects/${projectId}`)} />);
+    open(
+      <ProjectCreateModal
+        onComplete={(project) =>
+          navigate(`/projects/${project.id}`, {
+            state: { projectTitle: project.title },
+          })
+        }
+      />,
+    );
   };
 
   return (

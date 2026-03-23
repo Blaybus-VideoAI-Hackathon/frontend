@@ -110,6 +110,14 @@ export function useCutScenes({
     null,
   );
 
+  // projectId가 바뀌면 이전 프로젝트의 캐시된 데이터를 초기화
+  useEffect(() => {
+    setScenes([]);
+    setSelectedSceneId(null);
+    setHasInitialized(false);
+    setError(null);
+  }, [projectId]);
+
   const initialize = useCallback(async () => {
     setLoading(true);
     setError(null);
