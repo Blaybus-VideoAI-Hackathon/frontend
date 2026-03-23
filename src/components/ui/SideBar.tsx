@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useModalStore } from "../../store/ModalStore";
-import ProjectCreateModal from "./modals/ProjectCreateModal";
+// import { useModalStore } from "../../store/ModalStore";
+// import ProjectCreateModal from "./modals/ProjectCreateModal";
 import { axiosInstance } from "../../api/axiosInstance";
 
 interface Project {
@@ -95,7 +95,7 @@ const IconTrash = () => (
 export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { open } = useModalStore();
+  // const { open } = useModalStore();
 
   const [isOpen, setIsOpen] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -125,14 +125,14 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
     void load();
   }, [location.pathname]);
 
-  const fetchProjects = useCallback(async () => {
-    try {
-      const res = await axiosInstance.get<{ data: Project[] }>("/api/projects");
-      setProjects(res.data?.data ?? []);
-    } catch {
-      // 조회 실패 시 빈 목록 유지
-    }
-  }, []);
+  // const fetchProjects = useCallback(async () => {
+  //   try {
+  //     const res = await axiosInstance.get<{ data: Project[] }>("/api/projects");
+  //     setProjects(res.data?.data ?? []);
+  //   } catch {
+  //     // 조회 실패 시 빈 목록 유지
+  //   }
+  // }, []);
 
   // 씬 조회 — effect는 inline, 토글 핸들러용은 useCallback
   useEffect(() => {
@@ -177,17 +177,21 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
     });
   };
 
+  // const handleCreateProject = () => {
+  //   open(
+  //     <ProjectCreateModal
+  //       onComplete={(project) => {
+  //         void fetchProjects();
+  //         navigate(`/projects/${project.id}`, {
+  //           state: { projectTitle: project.title },
+  //         });
+  //       }}
+  //     />,
+  //   );
+  // };
+
   const handleCreateProject = () => {
-    open(
-      <ProjectCreateModal
-        onComplete={(project) => {
-          void fetchProjects();
-          navigate(`/projects/${project.id}`, {
-            state: { projectTitle: project.title },
-          });
-        }}
-      />,
-    );
+    navigate("/");
   };
 
   const handleProjectList = () => {

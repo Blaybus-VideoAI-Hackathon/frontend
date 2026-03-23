@@ -1,23 +1,28 @@
 import { useState, useRef, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import { createPlan, type Plan } from "../../api/planApi";
 
-export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
+export default function StoryStage({
+  onSuccess,
+}: {
+  onSuccess?: (plans: Plan[]) => void;
+}) {
   const { projectId } = useParams<{ projectId: string }>();
   const [idea, setIdea] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleSubmit = async () => {
-    if (!idea.trim() || isLoading) return;
+    if (!idea.trim() || isLoading || !projectId) return;
     setIsLoading(true);
+    setError(null);
     try {
-      await axios.post(
-        `https://hdb-backend.onrender.com/api/projects/${projectId}/plans`,
-        { userPrompt: idea },
-        {},
-      );
-      onSuccess?.();
+      const result = await createPlan({ projectId, userPrompt: idea });
+      onSuccess?.(result.data.plans);
+    } catch {
+      setError("기획 생성에 실패했습니다. 다시 시도해 주세요.");
     } finally {
       setIsLoading(false);
     }
@@ -29,6 +34,13 @@ export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }
+  };
+
+  const handleImageRemove = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   return (
@@ -44,30 +56,50 @@ export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
 
       {/* Image Upload Card */}
       <div className="mb-4 flex w-full flex-1 items-center justify-center rounded-2xl border border-white/6 bg-[#161618] px-6 py-9">
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          className="flex h-44 w-56 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-[1.5px] border-dashed border-white/12 bg-[#1e1e21] transition-colors hover:border-indigo-500/50"
-        >
-          {previewUrl ? (
-            <img
-              src={previewUrl}
-              alt="preview"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="rgba(255,255,255,0.25)"
-              strokeWidth="1.5"
+        <div className="relative">
+          {previewUrl && (
+            <button
+              onClick={handleImageRemove}
+              className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#2a2a2e] border border-white/15 text-gray-400 transition-colors hover:bg-red-500/80 hover:text-white"
             >
-              <rect x="3" y="3" width="18" height="18" rx="3" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <path d="M21 15l-5-5L5 21" />
-            </svg>
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           )}
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className="flex h-44 w-56 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-[1.5px] border-dashed border-white/12 bg-[#1e1e21] transition-colors hover:border-indigo-500/50"
+          >
+            {previewUrl ? (
+              <img
+                src={previewUrl}
+                alt="preview"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="rgba(255,255,255,0.25)"
+                strokeWidth="1.5"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <path d="M21 15l-5-5L5 21" />
+              </svg>
+            )}
+          </div>
         </div>
 
         {!previewUrl && (
@@ -139,6 +171,9 @@ export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
         </div>
       </div>
 
+      {error && (
+        <p className="mt-3 text-center text-sm text-red-400">{error}</p>
+      )}
     </section>
   );
 }

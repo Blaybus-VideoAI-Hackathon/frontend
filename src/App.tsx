@@ -22,7 +22,7 @@ function App() {
                     element={<CreateProjectPage />}
                   />
                   <Route
-                    path="/projects/complete"
+                    path="/projects/:projectId/complete"
                     element={<VideoCompletePage />}
                   />
                 </Routes>

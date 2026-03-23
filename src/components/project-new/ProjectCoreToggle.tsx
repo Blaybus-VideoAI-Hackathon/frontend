@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import LockIcon from "../../assets/icons/lock_purple.svg";
-import type { ProjectPlanningSummary } from "../../api/planApi";
+import type { ProjectPlanningSummary } from "../../api/planApi1";
 
 type InfoItem = {
   label: string;

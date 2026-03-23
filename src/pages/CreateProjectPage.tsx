@@ -3,6 +3,8 @@ import StepTabs from "../components/project-new/StepTabs";
 import ProjectCoreToggle from "../components/project-new/ProjectCoreToggle";
 import StepNavigation from "../components/project-new/StepNavigation";
 import StoryStage from "../components/story/StoryStage";
+import StoryPlanPage from "./StoryPlanPage";
+import { type Plan } from "../api/planApi";
 import { STEP_ORDER, type TabId } from "../constants/step";
 import ImageStage from "../components/image&video/ImageStage";
 import CutStage from "../components/cut/CutStage";
@@ -16,7 +18,7 @@ import {
   getProjectPlans,
   getProjectPlanningSummary,
   type ProjectPlanningSummary,
-} from "../api/planApi";
+} from "../api/planApi1";
 
 type EditingScene = {
   sceneNumber: number;
@@ -35,6 +37,8 @@ export default function CreateProjectPage() {
   const projectTitle = routeState?.projectTitle ?? "파일명";
 
   const [activeStep, setActiveStep] = useState<TabId>("story");
+  const [storySubStep, setStorySubStep] = useState<"input" | "plan">("input");
+  const [storyPlans, setStoryPlans] = useState<Plan[]>([]);
   const [editingScene, setEditingScene] = useState<EditingScene>(null);
 
   const [hasStoryPlans, setHasStoryPlans] = useState(false);
@@ -156,11 +160,6 @@ export default function CreateProjectPage() {
     setActiveStep(STEP_ORDER[currentStepIndex + 1]);
   };
 
-  const handleStorySuccess = () => {
-    setHasStoryPlans(true);
-    handleNext();
-  };
-
   const handleCancelImageEdit = () => {
     setEditingScene(null);
   };
@@ -172,7 +171,23 @@ export default function CreateProjectPage() {
   const renderStageContent = () => {
     switch (activeStep) {
       case "story":
-        return <StoryStage key={location.key} onSuccess={handleStorySuccess} />;
+        if (storySubStep === "plan") {
+          return (
+            <StoryPlanPage
+              plans={storyPlans}
+              onPrev={() => setStorySubStep("input")}
+              onNext={handleNext}
+            />
+          );
+        }
+        return (
+          <StoryStage
+            onSuccess={(plans) => {
+              setStoryPlans(plans);
+              setStorySubStep("plan");
+            }}
+          />
+        );
       case "image":
         return (
           <ImageStage
