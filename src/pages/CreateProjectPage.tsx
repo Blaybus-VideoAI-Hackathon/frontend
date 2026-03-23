@@ -4,6 +4,7 @@ import ProjectCoreToggle from "../components/project-new/ProjectCoreToggle";
 import StepNavigation from "../components/project-new/StepNavigation";
 import StoryStage from "../components/story/StoryStage";
 import StoryPlanPage from "./StoryPlanPage";
+import { type Plan } from "../api/planApi";
 import { STEP_ORDER, type TabId } from "../constants/step";
 import ImageStage from "../components/image&video/ImageStage";
 import CutStage from "../components/cut/CutStage";
@@ -28,6 +29,7 @@ export default function CreateProjectPage() {
 
   const [activeStep, setActiveStep] = useState<TabId>("story");
   const [storySubStep, setStorySubStep] = useState<"input" | "plan">("input");
+  const [storyPlans, setStoryPlans] = useState<Plan[]>([]);
   const [editingScene, setEditingScene] = useState<EditingScene>(null);
 
   const isValidProjectId = Number.isFinite(projectId) && projectId > 0;
@@ -85,12 +87,20 @@ export default function CreateProjectPage() {
         if (storySubStep === "plan") {
           return (
             <StoryPlanPage
+              plans={storyPlans}
               onPrev={() => setStorySubStep("input")}
               onNext={handleNext}
             />
           );
         }
-        return <StoryStage onSuccess={() => setStorySubStep("plan")} />;
+        return (
+          <StoryStage
+            onSuccess={(plans) => {
+              setStoryPlans(plans);
+              setStorySubStep("plan");
+            }}
+          />
+        );
       case "image":
         return (
           <ImageStage
