@@ -38,9 +38,10 @@ export async function createPlan({
   projectId: number | string;
   userPrompt: string;
 }) {
-  const response = await axiosInstance.post<
-    ApiResponse<{ plans: Plan[] }>
-  >(`/api/projects/${projectId}/plans`, { userPrompt });
+  const response = await axiosInstance.post<ApiResponse<{ plans: Plan[] }>>(
+    `/api/projects/${projectId}/plans`,
+    { userPrompt },
+  );
   return response.data;
 }
 
@@ -49,8 +50,8 @@ export async function getPlanHistory({
 }: {
   projectId: number | string;
 }) {
-  const response = await axiosInstance.get<
-    ApiResponse<Plan[]>
-  >(`/api/projects/${projectId}/plans`);
+  const response = await axiosInstance.get<ApiResponse<Plan[]>>(
+    `/api/projects/${projectId}/plans`,
+  );
   return response.data;
 }

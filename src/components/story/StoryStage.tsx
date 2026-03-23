@@ -2,7 +2,11 @@ import { useState, useRef, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import { createPlan, type Plan } from "../../api/planApi";
 
-export default function StoryStage({ onSuccess }: { onSuccess?: (plans: Plan[]) => void }) {
+export default function StoryStage({
+  onSuccess,
+}: {
+  onSuccess?: (plans: Plan[]) => void;
+}) {
   const { projectId } = useParams<{ projectId: string }>();
   const [idea, setIdea] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -58,7 +62,14 @@ export default function StoryStage({ onSuccess }: { onSuccess?: (plans: Plan[]) 
               onClick={handleImageRemove}
               className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#2a2a2e] border border-white/15 text-gray-400 transition-colors hover:bg-red-500/80 hover:text-white"
             >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>

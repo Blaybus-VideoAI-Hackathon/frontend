@@ -1,7 +1,9 @@
 import ImageEditCanvas from "./ImageEditCanvas";
 import AiChatBox from "../project-new/AiChatBox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { editSceneImageWithAi } from "../../api/imageApi";
+import { getSceneImages } from "../../api/sceneApi";
+import type { SceneImageItem } from "../../types/scene";
 
 type ImageEditStageProps = {
   projectId: number;
@@ -24,12 +26,32 @@ export default function ImageEditStage({
   onCancelEdit,
   onCompleteEdit,
 }: ImageEditStageProps) {
+  const [images, setImages] = useState<SceneImageItem[]>([]);
+  const [selectedImageId, setSelectedImageId] = useState(imageId);
   const [editedImageSrc, setEditedImageSrc] = useState(imageSrc);
   const [isDirty, setIsDirty] = useState(false);
-  // key를 바꾸면 ImageEditCanvas가 remount되어 상태 초기화
   const [canvasKey, setCanvasKey] = useState(0);
-  const [currentImageId, setCurrentImageId] = useState(imageId);
   const [isAiSubmitting, setIsAiSubmitting] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    getSceneImages({ projectId, sceneId })
+      .then((res) => setImages(res.data))
+      .catch(console.error);
+  }, [projectId, sceneId]);
+
+  const refreshImages = async () => {
+    const res = await getSceneImages({ projectId, sceneId });
+    setImages(res.data);
+  };
+
+  const handleSelectImage = (image: SceneImageItem) => {
+    const src = image.editedImageUrl || image.imageUrl;
+    setSelectedImageId(image.id);
+    setEditedImageSrc(src);
+    setCanvasKey((k) => k + 1);
+    setIsDirty(false);
+  };
 
   const handleCancelEdit = () => {
     setEditedImageSrc(imageSrc);
@@ -43,12 +65,13 @@ export default function ImageEditStage({
   };
 
   const handleAiEditRequest = async (userEditText: string) => {
+    setPendingMessage(userEditText);
     setIsAiSubmitting(true);
     try {
       const response = await editSceneImageWithAi({
         projectId,
         sceneId,
-        imageId: currentImageId,
+        imageId: selectedImageId,
         userEditText,
       });
 
@@ -57,8 +80,10 @@ export default function ImageEditStage({
         setEditedImageSrc(editedImageUrl);
         setCanvasKey((k) => k + 1);
       }
-      setCurrentImageId(id);
+      setSelectedImageId(id);
+      await refreshImages();
     } finally {
+      setPendingMessage(null);
       setIsAiSubmitting(false);
     }
   };
@@ -104,6 +129,10 @@ export default function ImageEditStage({
 
       <div className="min-w-0">
         <AiChatBox
+          images={images}
+          selectedImageId={selectedImageId}
+          onSelectImage={handleSelectImage}
+          pendingMessage={pendingMessage}
           isSubmitting={isAiSubmitting}
           onSendMessage={handleAiEditRequest}
         />

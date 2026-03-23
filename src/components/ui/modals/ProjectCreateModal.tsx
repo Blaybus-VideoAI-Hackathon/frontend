@@ -35,9 +35,12 @@ const STEPS = [
 
 // ─── Step 1: 프로젝트 설정 ──────────────────────────────
 function Step1({
-  projectName, setProjectName,
-  aspectRatio, setAspectRatio,
-  duration, setDuration,
+  projectName,
+  setProjectName,
+  aspectRatio,
+  setAspectRatio,
+  duration,
+  setDuration,
   onNext,
 }: {
   projectName: string;
@@ -52,7 +55,9 @@ function Step1({
     <div className="flex flex-col gap-5">
       {/* 프로젝트 이름 */}
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-medium text-white/80">프로젝트 이름</label>
+        <label className="text-sm font-medium text-white/80">
+          프로젝트 이름
+        </label>
         <input
           type="text"
           placeholder="프로젝트 이름을 입력해주세요."
@@ -73,9 +78,10 @@ function Step1({
               key={ratio}
               onClick={() => setAspectRatio(ratio)}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors
-                ${aspectRatio === ratio
-                  ? "bg-purple-600 text-white"
-                  : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
+                ${
+                  aspectRatio === ratio
+                    ? "bg-purple-600 text-white"
+                    : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
                 }`}
             >
               {ratio}
@@ -93,9 +99,10 @@ function Step1({
               key={d}
               onClick={() => setDuration(d)}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors
-                ${duration === d
-                  ? "bg-purple-600 text-white"
-                  : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
+                ${
+                  duration === d
+                    ? "bg-purple-600 text-white"
+                    : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
                 }`}
             >
               {d}
@@ -105,8 +112,12 @@ function Step1({
       </div>
 
       <div className="flex justify-end gap-2 mt-1">
-        <Button variant="secondary" disabled>이전</Button>
-        <Button variant="primary" onClick={onNext}>다음</Button>
+        <Button variant="secondary" disabled>
+          이전
+        </Button>
+        <Button variant="primary" onClick={onNext}>
+          다음
+        </Button>
       </div>
     </div>
   );
@@ -114,7 +125,10 @@ function Step1({
 
 // ─── Step 2: 영상 스타일 ────────────────────────────────
 function Step2({
-  selected, setSelected, onPrev, onNext,
+  selected,
+  setSelected,
+  onPrev,
+  onNext,
 }: {
   selected: VideoStyle;
   setSelected: (v: VideoStyle) => void;
@@ -130,9 +144,10 @@ function Step2({
             key={style}
             onClick={() => setSelected(style)}
             className={`w-full px-4 py-3 rounded-lg text-sm font-medium text-left transition-colors
-              ${selected === style
-                ? "bg-purple-600 text-white"
-                : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
+              ${
+                selected === style
+                  ? "bg-purple-600 text-white"
+                  : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
               }`}
           >
             {style}
@@ -140,8 +155,12 @@ function Step2({
         ))}
       </div>
       <div className="flex justify-end gap-2 mt-1">
-        <Button variant="secondary" onClick={onPrev}>이전</Button>
-        <Button variant="primary" onClick={onNext}>다음</Button>
+        <Button variant="secondary" onClick={onPrev}>
+          이전
+        </Button>
+        <Button variant="primary" onClick={onNext}>
+          다음
+        </Button>
       </div>
     </div>
   );
@@ -149,7 +168,12 @@ function Step2({
 
 // ─── Step 3: 영상 목적 ─────────────────────────────────
 function Step3({
-  selected, setSelected, onPrev, onSubmit, isLoading, error,
+  selected,
+  setSelected,
+  onPrev,
+  onSubmit,
+  isLoading,
+  error,
 }: {
   selected: VideoPurpose;
   setSelected: (v: VideoPurpose) => void;
@@ -167,9 +191,10 @@ function Step3({
             key={purpose}
             onClick={() => setSelected(purpose)}
             className={`w-full px-4 py-3 rounded-lg text-sm font-medium text-left transition-colors
-              ${selected === purpose
-                ? "bg-purple-600 text-white"
-                : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
+              ${
+                selected === purpose
+                  ? "bg-purple-600 text-white"
+                  : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
               }`}
           >
             {purpose}
@@ -178,7 +203,9 @@ function Step3({
       </div>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <div className="flex justify-between mt-1">
-        <Button variant="secondary" onClick={onPrev} disabled={isLoading}>이전</Button>
+        <Button variant="secondary" onClick={onPrev} disabled={isLoading}>
+          이전
+        </Button>
         <Button variant="primary" onClick={onSubmit} disabled={isLoading}>
           {isLoading ? "생성 중..." : "프로젝트 생성하기"}
         </Button>
@@ -188,7 +215,11 @@ function Step3({
 }
 
 // ─── 메인 Wizard 컴포넌트 ───────────────────────────────
-export default function ProjectCreateModal({ onComplete }: { onComplete?: (projectId: number) => void }) {
+export default function ProjectCreateModal({
+  onComplete,
+}: {
+  onComplete?: (project: { id: number; title: string }) => void;
+}) {
   const { close } = useModalStore();
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -219,10 +250,20 @@ export default function ProjectCreateModal({ onComplete }: { onComplete?: (proje
           purpose: videoPurpose,
           duration: durationSeconds,
         },
-        {}
+        {},
       );
+
+      const createdProjectId = response.data?.data?.id;
+
+      if (!createdProjectId) {
+        throw new Error("프로젝트 ID를 받지 못했습니다.");
+      }
+
       close();
-      onComplete?.(response.data.data.id);
+      onComplete?.({
+        id: createdProjectId,
+        title: projectName,
+      });
     } catch {
       setError("프로젝트 생성에 실패했습니다. 다시 시도해주세요.");
     } finally {

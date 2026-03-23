@@ -35,15 +35,23 @@ interface StoryPlanPageProps {
   onNext?: () => void;
 }
 
-export default function StoryPlanPage({ plans: plansProp, onPrev, onNext }: StoryPlanPageProps) {
+export default function StoryPlanPage({
+  plans: plansProp,
+  onPrev,
+  onNext,
+}: StoryPlanPageProps) {
   const { projectId } = useParams<{ projectId: string }>();
   const [plans, setPlans] = useState<StoryPlan[]>(() =>
-    plansProp && plansProp.length > 0 ? plansProp.slice(0, 3).map(mapToPlan) : [],
+    plansProp && plansProp.length > 0
+      ? plansProp.slice(0, 3).map(mapToPlan)
+      : [],
   );
   const [selectedId, setSelectedId] = useState<string>(
     plansProp && plansProp.length > 0 ? (PLAN_LABELS[0] ?? "A") : "A",
   );
-  const [isLoading, setIsLoading] = useState(!plansProp || plansProp.length === 0);
+  const [isLoading, setIsLoading] = useState(
+    !plansProp || plansProp.length === 0,
+  );
 
   useEffect(() => {
     if (plansProp && plansProp.length > 0) return;
@@ -109,8 +117,12 @@ export default function StoryPlanPage({ plans: plansProp, onPrev, onNext }: Stor
                   </div>
                   {plan.subCharacters.length > 0 && (
                     <div>
-                      <p className="text-white/50 text-xs mb-0.5">보조 캐릭터</p>
-                      <p className="text-white text-sm">{plan.subCharacters.join(", ")}</p>
+                      <p className="text-white/50 text-xs mb-0.5">
+                        보조 캐릭터
+                      </p>
+                      <p className="text-white text-sm">
+                        {plan.subCharacters.join(", ")}
+                      </p>
                     </div>
                   )}
                   <div>

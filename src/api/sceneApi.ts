@@ -3,6 +3,7 @@ import type {
   DeleteSceneResponse,
   GenerateScenesResponse,
   GetSceneDesignResponse,
+  GetSceneImagesResponse,
   GetScenesResponse,
   RegenerateSceneDesignRequest,
   RegenerateSceneDesignResponse,
@@ -30,6 +31,11 @@ type RegenerateSceneDesignParams = {
   projectId: number;
   sceneId: number;
   body?: RegenerateSceneDesignRequest;
+};
+
+type GetSceneImagesParams = {
+  projectId: number;
+  sceneId: number;
 };
 
 export async function generateScenes({ projectId }: GenerateScenesParams) {
@@ -75,6 +81,17 @@ export async function regenerateSceneDesign({
   const response = await axiosInstance.post<RegenerateSceneDesignResponse>(
     `/api/scenes/projects/${projectId}/scenes/${sceneId}/design/regenerate`,
     body,
+  );
+
+  return response.data;
+}
+
+export async function getSceneImages({
+  projectId,
+  sceneId,
+}: GetSceneImagesParams) {
+  const response = await axiosInstance.get<GetSceneImagesResponse>(
+    `/api/projects/${projectId}/scenes/${sceneId}/images`,
   );
 
   return response.data;

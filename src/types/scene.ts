@@ -74,3 +74,23 @@ export type RegenerateSceneDesignResponse = {
   message: string;
   data: SceneDesign;
 };
+
+export type SceneImageItem = {
+  id: number;
+  sceneId: number;
+  imageNumber: number;
+  imageUrl: string;
+  editedImageUrl: string;
+  imagePrompt: string;
+  status: string;
+  statusDescription: string;
+  createdAt: string;
+  updatedAt: string;
+  fallbackUsed: boolean;
+};
+
+export type GetSceneImagesResponse = {
+  success: boolean;
+  message: string;
+  data: SceneImageItem[];
+};

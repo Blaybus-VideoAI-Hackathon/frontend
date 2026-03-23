@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+// import { useModalStore } from "../../store/ModalStore";
+// import ProjectCreateModal from "./modals/ProjectCreateModal";
 import { axiosInstance } from "../../api/axiosInstance";
 
 interface Project {
@@ -22,7 +24,16 @@ interface SidebarProps {
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
 const IconMenu = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <line x1="3" y1="6" x2="21" y2="6" />
     <line x1="3" y1="12" x2="21" y2="12" />
     <line x1="3" y1="18" x2="21" y2="18" />
@@ -30,20 +41,47 @@ const IconMenu = () => (
 );
 
 const IconPencil = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M12 20h9" />
     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
   </svg>
 );
 
 const IconFolder = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
   </svg>
 );
 
 const IconTrash = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polyline points="3 6 5 6 21 6" />
     <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
     <path d="M10 11v6" />
@@ -54,11 +92,10 @@ const IconTrash = () => (
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
-export default function Sidebar({
-  user = { name: "user 01" },
-}: SidebarProps) {
+export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  // const { open } = useModalStore();
 
   const [isOpen, setIsOpen] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -69,21 +106,33 @@ export default function Sidebar({
   const currentProjectId = match ? Number(match[1]) : null;
 
   // expandedProjectId를 URL에서 직접 초기화 (effect 내 동기 setState 불필요)
-  const [expandedProjectId, setExpandedProjectId] = useState<number | null>(currentProjectId);
+  const [expandedProjectId, setExpandedProjectId] = useState<number | null>(
+    currentProjectId,
+  );
 
-  // 마운트 시 최초 1회만 프로젝트 목록 조회
+  // 프로젝트 목록 조회 — effect는 inline, 이벤트 핸들러용은 useCallback
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await axiosInstance.get<{ data: Project[] }>("/api/projects");
+        const res = await axiosInstance.get<{ data: Project[] }>(
+          "/api/projects",
+        );
         setProjects(res.data?.data ?? []);
       } catch {
         // 조회 실패 시 빈 목록 유지
       }
     };
     void load();
-  }, []);
+  }, [location.pathname]);
 
+  // const fetchProjects = useCallback(async () => {
+  //   try {
+  //     const res = await axiosInstance.get<{ data: Project[] }>("/api/projects");
+  //     setProjects(res.data?.data ?? []);
+  //   } catch {
+  //     // 조회 실패 시 빈 목록 유지
+  //   }
+  // }, []);
 
   // 씬 조회 — effect는 inline, 토글 핸들러용은 useCallback
   useEffect(() => {
@@ -93,7 +142,10 @@ export default function Sidebar({
         const res = await axiosInstance.get<{ data: Scene[] }>(
           `/api/scenes/projects/${currentProjectId}/scenes`,
         );
-        setScenes((prev) => ({ ...prev, [currentProjectId]: res.data?.data ?? [] }));
+        setScenes((prev) => ({
+          ...prev,
+          [currentProjectId]: res.data?.data ?? [],
+        }));
       } catch {
         setScenes((prev) => ({ ...prev, [currentProjectId]: [] }));
       }
@@ -119,8 +171,24 @@ export default function Sidebar({
       setExpandedProjectId(projectId);
       void fetchScenes(projectId);
     }
-    navigate(`/projects/${projectId}`);
+    const project = projects.find((p) => p.id === projectId);
+    navigate(`/projects/${projectId}`, {
+      state: { projectTitle: project?.title },
+    });
   };
+
+  // const handleCreateProject = () => {
+  //   open(
+  //     <ProjectCreateModal
+  //       onComplete={(project) => {
+  //         void fetchProjects();
+  //         navigate(`/projects/${project.id}`, {
+  //           state: { projectTitle: project.title },
+  //         });
+  //       }}
+  //     />,
+  //   );
+  // };
 
   const handleCreateProject = () => {
     navigate("/");
@@ -142,7 +210,9 @@ export default function Sidebar({
   };
 
   return (
-    <aside className={`flex flex-col h-screen bg-[#1e1e24] border-r border-white/8 shrink-0 transition-all duration-300 ${isOpen ? "w-55" : "w-14"}`}>
+    <aside
+      className={`flex flex-col h-screen bg-[#1e1e24] border-r border-white/8 shrink-0 transition-all duration-300 ${isOpen ? "w-55" : "w-14"}`}
+    >
       {/* 햄버거 메뉴 */}
       <div className="px-4 pt-5 pb-3">
         <button
@@ -154,7 +224,7 @@ export default function Sidebar({
         </button>
       </div>
 
-      {/* 네비게이션 아이콘 (항상 표시) */}
+      {/* 네비게이션 + 프로젝트 목록 + 유저 프로필 */}
       <nav className={`flex flex-col gap-1 mt-1 ${isOpen ? "px-3" : "px-2"}`}>
         <button
           onClick={handleCreateProject}
@@ -190,9 +260,8 @@ export default function Sidebar({
                       className={`
                         flex-1 text-left pl-[26px] pr-7 py-2 rounded-lg text-[13px] font-medium
                         transition-all duration-150 truncate cursor-pointer
-                        ${isActive
-                          ? "bg-[#4c3f8a] text-white"
-                          : "text-white/55"
+                        ${
+                          isActive ? "bg-[#4c3f8a] text-white" : "text-white/55"
                         }
                       `}
                     >
@@ -241,7 +310,9 @@ export default function Sidebar({
                 {user.name[0]}
               </div>
             )}
-            <span className="text-[13px] text-white/70 truncate">{user.name}</span>
+            <span className="text-[13px] text-white/70 truncate">
+              {user.name}
+            </span>
           </div>
         </>
       )}
