@@ -1,8 +1,8 @@
 import { useState, useRef, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
-import { createPlan } from "../../api/planApi";
+import { createPlan, type Plan } from "../../api/planApi";
 
-export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
+export default function StoryStage({ onSuccess }: { onSuccess?: (plans: Plan[]) => void }) {
   const { projectId } = useParams<{ projectId: string }>();
   const [idea, setIdea] = useState<string>("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -15,12 +15,8 @@ export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
     setIsLoading(true);
     setError(null);
     try {
-      await Promise.all([
-        createPlan({ projectId, userPrompt: idea }),
-        createPlan({ projectId, userPrompt: idea }),
-        createPlan({ projectId, userPrompt: idea }),
-      ]);
-      onSuccess?.();
+      const result = await createPlan({ projectId, userPrompt: idea });
+      onSuccess?.(result.data.plans);
     } catch {
       setError("기획 생성에 실패했습니다. 다시 시도해 주세요.");
     } finally {

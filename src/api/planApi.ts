@@ -1,15 +1,28 @@
 import { axiosInstance } from "./axiosInstance";
 
-export interface ProjectPlanResponse {
+export interface CoreElements {
+  purpose?: string;
+  duration?: number;
+  ratio?: string;
+  style?: string;
+  mainCharacter?: string;
+  subCharacters?: string[];
+  backgroundWorld?: string;
+  storyFlow?: string;
+  storyLine?: string;
+}
+
+export interface Plan {
+  planId: number;
   title: string;
-  theme: string;
-  mainCharacter: string;
-  background: string;
-  timeOfDay: string;
-  mood: string;
-  style: string;
-  scenes: { sceneNumber: number; description: string; imagePrompt: string }[];
-  createdAt: string;
+  focus: string;
+  displayText: string;
+  recommendationReason?: string;
+  strengths?: string[];
+  targetMood?: string;
+  targetUseCase?: string;
+  coreElements?: CoreElements;
+  storyLine?: string;
 }
 
 interface ApiResponse<T> {
@@ -26,7 +39,7 @@ export async function createPlan({
   userPrompt: string;
 }) {
   const response = await axiosInstance.post<
-    ApiResponse<ProjectPlanResponse>
+    ApiResponse<{ plans: Plan[] }>
   >(`/api/projects/${projectId}/plans`, { userPrompt });
   return response.data;
 }
@@ -37,7 +50,7 @@ export async function getPlanHistory({
   projectId: number | string;
 }) {
   const response = await axiosInstance.get<
-    ApiResponse<ProjectPlanResponse[]>
+    ApiResponse<Plan[]>
   >(`/api/projects/${projectId}/plans`);
   return response.data;
 }
