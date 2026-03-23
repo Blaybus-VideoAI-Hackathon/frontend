@@ -1,6 +1,8 @@
 import { axiosInstance } from "./axiosInstance";
 import type {
   DeleteSceneResponse,
+  GenerateSceneDesignRequest,
+  GenerateSceneDesignResponse,
   GenerateScenePromptResponse,
   GenerateScenesRequest,
   GenerateScenesResponse,
@@ -18,6 +20,12 @@ type GenerateScenesParams = {
 
 type GetScenesParams = {
   projectId: number;
+};
+
+type GenerateSceneDesignParams = {
+  projectId: number;
+  sceneId: number;
+  body: GenerateSceneDesignRequest;
 };
 
 type GetSceneDesignParams = {
@@ -61,6 +69,19 @@ export async function generateScenes({
 export async function getScenesByProject({ projectId }: GetScenesParams) {
   const response = await axiosInstance.get<GetScenesResponse>(
     `/api/scenes/projects/${projectId}/scenes`,
+  );
+
+  return response.data;
+}
+
+export async function generateSceneDesign({
+  projectId,
+  sceneId,
+  body,
+}: GenerateSceneDesignParams) {
+  const response = await axiosInstance.post<GenerateSceneDesignResponse>(
+    `/api/scenes/projects/${projectId}/scenes/${sceneId}/design`,
+    body,
   );
 
   return response.data;

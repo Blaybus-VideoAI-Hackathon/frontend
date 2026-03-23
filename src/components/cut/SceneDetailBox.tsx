@@ -11,9 +11,11 @@ type SceneDetailBoxProps = {
 
 function DetailRow({ label, value }: CutSceneDetailItem) {
   return (
-    <div className="space-y-2">
-      <h3 className="text-[20px] font-bold leading-none text-white">{label}</h3>
-      <p className="text-[18px] leading-[1.6] text-[rgba(255,255,255,0.72)]">
+    <div className="space-y-0">
+      <h3 className="text-[19px] font-bold leading-none text-white/90">
+        {label}
+      </h3>
+      <p className="text-[18px] leading-7 text-[rgba(255,255,255,0.6)]">
         {value}
       </p>
     </div>
@@ -34,7 +36,7 @@ export default function SceneDetailBox({
         <div className="text-gray-100 text-[18px] font-bold">{title}</div>
       </div>
 
-      <div className="ml-4 mt-12 flex flex-col gap-12">
+      <div className="ml-4 mt-12 flex flex-col gap-9">
         {details.map((item) => (
           <DetailRow key={item.label} label={item.label} value={item.value} />
         ))}

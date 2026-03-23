@@ -9,6 +9,7 @@ type CutStageProps = {
   selectedSceneNumber: number;
   loading: boolean;
   isGeneratingPrompts: boolean;
+  generationStatusMessage?: string | null;
   error: string | null;
   isDeleting: boolean;
   regeneratingSceneId: number | null;
@@ -72,6 +73,7 @@ export default function CutStage({
   selectedSceneNumber,
   loading,
   isGeneratingPrompts,
+  generationStatusMessage,
   error,
   isDeleting,
   regeneratingSceneId,
@@ -114,14 +116,17 @@ export default function CutStage({
           onRemoveScene={(sceneId) => {
             onDeleteScene(sceneId);
           }}
-          removeDisabled={isDeleting || regeneratingSceneId !== null || isGeneratingPrompts}
+          removeDisabled={
+            isDeleting || regeneratingSceneId !== null || isGeneratingPrompts
+          }
         />
       </div>
 
       {isGeneratingPrompts ? (
         <div className="flex min-h-150 items-center justify-center rounded-lg bg-gray-900">
           <div className="text-[18px] text-[rgba(255,255,255,0.72)]">
-            이미지/영상 프롬프트를 생성 중입니다...
+            {generationStatusMessage ??
+              "이미지/영상 프롬프트를 생성 중입니다..."}
           </div>
         </div>
       ) : (

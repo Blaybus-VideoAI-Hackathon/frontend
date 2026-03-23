@@ -31,7 +31,7 @@ function mapToPlan(plan: GeneratedPlanItem, index: number): StoryPlan {
     subCharacters: plan.coreElements?.subCharacters ?? [],
     background: plan.coreElements?.backgroundWorld ?? "",
     atmosphere: plan.targetMood ?? "",
-    story: plan.storyLine ?? plan.coreElements?.storyLine ?? "",
+    story: plan.storyLine ?? "",
   };
 }
 
@@ -179,11 +179,6 @@ export default function StoryPlanPage({
                   <div>
                     <p className="mb-0.5 text-xs text-white/50">배경</p>
                     <p className="text-sm text-white">{plan.background}</p>
-                  </div>
-
-                  <div>
-                    <p className="mb-0.5 text-xs text-white/50">분위기</p>
-                    <p className="text-sm text-white">{plan.atmosphere}</p>
                   </div>
 
                   <div>

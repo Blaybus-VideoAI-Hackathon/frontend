@@ -22,11 +22,13 @@ export type GetFinalVideoResponse = {
 export type SceneVideo = {
   id: number;
   sceneId: number;
+  sceneOrder: number;
   duration: number;
   videoUrl: string;
   videoPrompt: string;
   status: string;
   statusDescription: string;
+  representative: boolean;
   createdAt: string;
   updatedAt: string;
 };

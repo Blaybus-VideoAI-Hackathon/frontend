@@ -43,7 +43,7 @@ function StatusText({
 
   if (status === "generating") {
     return (
-      <div className="flex items-center gap-1 text-[14px] font-medium text-[rgba(255,255,255,0.68)]">
+      <div className="flex items-center gap-1 text-[14px] font-medium text-[rgba(255,255,255,0.68)] mr-3 whitespace-nowrap">
         생성 중
         <img src={GeneratingIcon} alt="" className="h-4 w-4 object-contain" />
       </div>

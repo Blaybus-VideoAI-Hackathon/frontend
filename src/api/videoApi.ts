@@ -9,7 +9,6 @@ import type {
 type GenerateSceneVideoParams = {
   projectId: number;
   sceneId: number;
-  duration: 3 | 4 | 5;
 };
 
 type GetProjectVideosParams = {
@@ -22,13 +21,9 @@ type GetProjectVideosParams = {
 export async function generateSceneVideo({
   projectId,
   sceneId,
-  duration,
 }: GenerateSceneVideoParams) {
   const response = await axiosInstance.post<GenerateSceneVideoResponse>(
     `/api/projects/${projectId}/scenes/${sceneId}/videos/generate`,
-    {
-      duration,
-    },
   );
 
   return response.data;
