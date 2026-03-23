@@ -8,6 +8,7 @@ interface StoryPlan {
   title: string;
   badge: string;
   mainCharacter: string;
+  subCharacters: string[];
   background: string;
   atmosphere: string;
   story: string;
@@ -21,6 +22,7 @@ function mapToPlan(plan: Plan, index: number): StoryPlan {
     title: plan.title || `기획안 ${PLAN_LABELS[index] ?? index + 1}`,
     badge: plan.focus ?? "",
     mainCharacter: plan.coreElements?.mainCharacter ?? "",
+    subCharacters: plan.coreElements?.subCharacters ?? [],
     background: plan.coreElements?.backgroundWorld ?? "",
     atmosphere: plan.targetMood ?? "",
     story: plan.storyLine ?? plan.coreElements?.storyLine ?? "",
@@ -105,6 +107,12 @@ export default function StoryPlanPage({ plans: plansProp, onPrev, onNext }: Stor
                     <p className="text-white/50 text-xs mb-0.5">메인 캐릭터</p>
                     <p className="text-white text-sm">{plan.mainCharacter}</p>
                   </div>
+                  {plan.subCharacters.length > 0 && (
+                    <div>
+                      <p className="text-white/50 text-xs mb-0.5">보조 캐릭터</p>
+                      <p className="text-white text-sm">{plan.subCharacters.join(", ")}</p>
+                    </div>
+                  )}
                   <div>
                     <p className="text-white/50 text-xs mb-0.5">배경</p>
                     <p className="text-white text-sm">{plan.background}</p>
