@@ -15,7 +15,11 @@ export default function StoryStage({ onSuccess }: { onSuccess?: () => void }) {
     setIsLoading(true);
     setError(null);
     try {
-      await createPlan({ projectId, userPrompt: idea });
+      await Promise.all([
+        createPlan({ projectId, userPrompt: idea }),
+        createPlan({ projectId, userPrompt: idea }),
+        createPlan({ projectId, userPrompt: idea }),
+      ]);
       onSuccess?.();
     } catch {
       setError("기획 생성에 실패했습니다. 다시 시도해 주세요.");

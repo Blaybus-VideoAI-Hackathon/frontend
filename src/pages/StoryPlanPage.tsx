@@ -3,19 +3,16 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Button from "../components/ui/Button";
 
-interface CoreElements {
-  mainCharacter?: string;
-  subCharacters?: string[];
-  backgroundWorld?: string;
-  style?: string;
-  storyLine?: string;
-  storyFlow?: string;
-}
-
 interface ProjectPlanResponse {
-  displayText?: string;
-  coreElements?: CoreElements;
-  createdAt?: string;
+  title: string;
+  theme: string;
+  mainCharacter: string;
+  background: string;
+  timeOfDay: string;
+  mood: string;
+  style: string;
+  scenes: { sceneNumber: number; description: string; imagePrompt: string }[];
+  createdAt: string;
 }
 
 interface StoryPlan {
@@ -31,15 +28,14 @@ interface StoryPlan {
 const PLAN_LABELS = ["A", "B", "C"];
 
 function mapToPlan(plan: ProjectPlanResponse, index: number): StoryPlan {
-  const core = plan.coreElements ?? {};
   return {
     id: PLAN_LABELS[index] ?? String(index),
     title: `기획안 ${PLAN_LABELS[index] ?? index + 1}`,
-    badge: core.style ?? "",
-    mainCharacter: core.mainCharacter ?? "",
-    background: core.backgroundWorld ?? "",
-    atmosphere: core.storyFlow ?? "",
-    story: core.storyLine ?? "",
+    badge: plan.style ?? "",
+    mainCharacter: plan.mainCharacter ?? "",
+    background: plan.background ?? "",
+    atmosphere: plan.mood ?? "",
+    story: plan.theme ?? "",
   };
 }
 
