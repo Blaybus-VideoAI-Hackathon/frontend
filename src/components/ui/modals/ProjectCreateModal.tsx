@@ -28,9 +28,9 @@ type VideoStyle = (typeof VIDEO_STYLES)[number];
 type VideoPurpose = (typeof VIDEO_PURPOSES)[number];
 
 const STEPS = [
-  { label: "프로젝트\n설정" },
-  { label: "영상\n스타일" },
-  { label: "영상\n목적" },
+  { label: "" },
+  { label: "" },
+  { label: "" },
 ];
 
 // ─── Step 1: 프로젝트 설정 ──────────────────────────────
