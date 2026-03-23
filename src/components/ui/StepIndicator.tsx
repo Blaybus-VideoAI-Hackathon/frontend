@@ -56,18 +56,6 @@ export default function StepIndicator({
               {isDone ? "✓" : index + 1}
             </div>
 
-            {/* 라벨 */}
-            <span
-              className={`mt-2 text-xs text-center leading-snug max-w-16 transition-colors duration-300 ${
-                isActive
-                  ? isDark ? "text-white font-medium" : "text-gray-900 font-medium"
-                  : isDone
-                    ? isDark ? "text-white/50" : "text-gray-500"
-                    : isDark ? "text-white/25" : "text-gray-400"
-              }`}
-            >
-              {step.label}
-            </span>
           </div>
         );
       })}
