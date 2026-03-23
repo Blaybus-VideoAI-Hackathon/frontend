@@ -48,7 +48,7 @@ export type ProjectPlanningSummary = {
   subCharacters: string[];
   backgroundWorld: string;
   storyFlow: string;
-  storyline: string;
+  storyLine: string;
 };
 
 export type GetProjectPlanningSummaryResponse = {

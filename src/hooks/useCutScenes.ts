@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   deleteScene,
+  generateScenePrompt,
   generateScenes,
   getSceneDesign,
   getScenesByProject,
@@ -26,6 +27,7 @@ export type CutScene = {
 type UseCutScenesParams = {
   projectId: number;
   enabled?: boolean;
+  selectedPlanId?: number | null;
 };
 
 function createDetailItems(
@@ -99,10 +101,12 @@ function mapSceneDesignToCutScene(
 export function useCutScenes({
   projectId,
   enabled = true,
+  selectedPlanId,
 }: UseCutScenesParams) {
   const [scenes, setScenes] = useState<CutScene[]>([]);
   const [selectedSceneId, setSelectedSceneId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isGeneratingPrompts, setIsGeneratingPrompts] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -116,29 +120,61 @@ export function useCutScenes({
     setSelectedSceneId(null);
     setHasInitialized(false);
     setError(null);
+    setIsGeneratingPrompts(false);
   }, [projectId]);
 
   const initialize = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setIsGeneratingPrompts(false);
 
     try {
       let scenesResponse = await getScenesByProject({ projectId });
       let rawScenes = scenesResponse.data ?? [];
 
+      let isNewlyGenerated = false;
       if (rawScenes.length === 0) {
         await generateScenes({
           projectId,
+          body: { selectedPlanId: selectedPlanId ?? 0 },
         });
 
         scenesResponse = await getScenesByProject({ projectId });
         rawScenes = scenesResponse.data ?? [];
+        isNewlyGenerated = true;
       }
 
       const orderedScenes = [...rawScenes].sort(
         (a, b) => a.sceneOrder - b.sceneOrder,
       );
 
+      // Phase 1: 씬 목록을 즉시 표시
+      const basicScenes: CutScene[] = orderedScenes.map((scene) => ({
+        id: scene.id,
+        title: scene.summary || `Scene ${scene.sceneOrder}`,
+        details: [],
+      }));
+      setScenes(basicScenes);
+      setSelectedSceneId((prev) => {
+        if (prev && basicScenes.some((s) => s.id === prev)) return prev;
+        return basicScenes[0]?.id ?? null;
+      });
+      setLoading(false);
+
+      // Phase 2: 신규 생성된 씬에 한해 프롬프트를 순차 생성
+      if (isNewlyGenerated) {
+        setIsGeneratingPrompts(true);
+        for (const scene of orderedScenes) {
+          try {
+            await generateScenePrompt({ projectId, sceneId: scene.id });
+          } catch (err) {
+            console.warn(`Scene ${scene.id} 프롬프트 생성 실패:`, err);
+          }
+        }
+        setIsGeneratingPrompts(false);
+      }
+
+      // Phase 3: 씬 상세 정보(디자인) 조회
       const designResponses = await Promise.all(
         orderedScenes.map((scene) =>
           getSceneDesign({
@@ -163,10 +199,11 @@ export function useCutScenes({
     } catch (err) {
       console.error("컷씬 초기화 실패:", err);
       setError("컷씬 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
+      setIsGeneratingPrompts(false);
     } finally {
       setLoading(false);
     }
-  }, [projectId]);
+  }, [projectId, selectedPlanId]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -280,6 +317,7 @@ export function useCutScenes({
     selectedSceneId,
     selectedSceneNumber,
     loading,
+    isGeneratingPrompts,
     error,
     isDeleting,
     regeneratingSceneId,

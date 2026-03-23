@@ -23,13 +23,11 @@ export default function ImageEditStage({
   sceneNumber,
   title,
   imageSrc,
-  onCancelEdit,
   onCompleteEdit,
 }: ImageEditStageProps) {
   const [images, setImages] = useState<SceneImageItem[]>([]);
   const [selectedImageId, setSelectedImageId] = useState(imageId);
   const [editedImageSrc, setEditedImageSrc] = useState(imageSrc);
-  const [isDirty, setIsDirty] = useState(false);
   const [canvasKey, setCanvasKey] = useState(0);
   const [isAiSubmitting, setIsAiSubmitting] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
@@ -50,14 +48,6 @@ export default function ImageEditStage({
     setSelectedImageId(image.id);
     setEditedImageSrc(src);
     setCanvasKey((k) => k + 1);
-    setIsDirty(false);
-  };
-
-  const handleCancelEdit = () => {
-    setEditedImageSrc(imageSrc);
-    setIsDirty(false);
-    setCanvasKey((k) => k + 1);
-    onCancelEdit?.();
   };
 
   const handleCompleteEdit = () => {
@@ -97,26 +87,12 @@ export default function ImageEditStage({
           title={title}
           imageSrc={editedImageSrc}
           onImageChange={setEditedImageSrc}
-          onDirtyChange={setIsDirty}
           onDownload={() => {
             console.log("이미지 다운로드");
           }}
         />
 
         <div className="mt-5 mr-4 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={handleCancelEdit}
-            disabled={!isDirty}
-            className={`rounded-[8px] px-5 py-3 text-[14px] font-semibold transition ${
-              isDirty
-                ? "bg-[#4A4A4F] text-white hover:bg-[#5A5A61]"
-                : "cursor-not-allowed bg-[#3A3A3D] text-[#8B8B92]"
-            }`}
-          >
-            수정 취소
-          </button>
-
           <button
             type="button"
             onClick={handleCompleteEdit}
