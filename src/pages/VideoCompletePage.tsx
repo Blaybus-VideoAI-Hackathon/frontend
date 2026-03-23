@@ -1,9 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Button from "../components/ui/Button";
+import { mergeProjectVideos, getFinalVideo } from "../api/videoApi";
 
 export default function VideoCompletePage() {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { projectId } = useParams<{ projectId: string }>();
   const [storyOpen, setStoryOpen] = useState(true);
+  const [finalVideoUrl, setFinalVideoUrl] = useState<string | null>(null);
+  const [status, setStatus] = useState<"merging" | "polling" | "done" | "error">("merging");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!projectId) return;
+    const id = Number(projectId);
+
+    async function mergeAndFetch() {
+      try {
+        setStatus("merging");
+        await mergeProjectVideos(id);
+
+        setStatus("polling");
+        const finalRes = await getFinalVideo(id);
+        if (finalRes.data?.finalVideoUrl) {
+          setFinalVideoUrl(finalRes.data.finalVideoUrl);
+          setStatus("done");
+        } else {
+          setErrorMessage("최종 영상 URL을 가져올 수 없습니다.");
+          setStatus("error");
+        }
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : "오류가 발생했습니다.";
+        setErrorMessage(msg);
+        setStatus("error");
+      }
+    }
+
+    mergeAndFetch();
+  }, [projectId]);
 
   const storyText =
     "황소만한 전마의 발자국 소리가 귀를 가득 채우는 가운데, 전쟁의 흔적을 이비밖 스나미의 다가오고 있었다. 냉혹한 진영공의 눈빛이 창두는 가득에 빛에 해처럼 상교소소 초원의 한가락에서 사 있고, 그 밖에는해는 거대한 희잡들을 훑기이며 마이하는 긴 전향의 전이라 나를 지 사람/ 사이에서는 높지작! 들지작? 성이다는나이나 산전인 의 오고, 그 담처 삶으로, 전혀 창자들이 간절의 끊으라 그의 이기를 기어이며 표면이 고걸 성공스를 불에 취기라고, 그 소현 이르오는 끊으들이 복도으로 몰를 들이 들을 걸었을 막이다는, 마그리마 태기의 인이 창전으로 흩은좌며 높다낮 복잡 좌피의 기세가 취히들을 이른다고, 전경의 마기 육의 직면 한을가서야 마유가 두 잡지 없이 이렇이하는 누른들이 두 개의 한 충동을 불속의 아오란 증류를 용이는 한다.";
@@ -19,24 +52,28 @@ export default function VideoCompletePage() {
       </p>
 
       {/* 비디오 플레이어 */}
-      <div className="relative w-full max-w-2xl aspect-video bg-gray-700 rounded-lg overflow-hidden mb-6 grayscale">
-        {/* 회색 이미지 영역 */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          {!isPlaying && (
-            <button
-              onClick={() => setIsPlaying(true)}
-              className="w-16 h-16 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
-            >
-              <svg className="w-7 h-7 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="5,3 19,12 5,21" />
-              </svg>
-            </button>
-          )}
-        </div>
-        {/* 타임스탬프 */}
-        <div className="absolute bottom-3 right-3 text-white text-xs bg-black/50 px-1.5 py-0.5 rounded">
-          0:03
-        </div>
+      <div className="relative w-full max-w-2xl aspect-video bg-gray-700 rounded-lg overflow-hidden mb-6">
+        {status === "merging" || status === "polling" ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+            <svg className="w-10 h-10 text-white animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            <p className="text-white text-sm">
+              {status === "merging" ? "영상 병합 중..." : "최종 영상 불러오는 중..."}
+            </p>
+          </div>
+        ) : status === "error" ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-red-400 text-sm text-center px-4">{errorMessage}</p>
+          </div>
+        ) : finalVideoUrl ? (
+          <video
+            src={finalVideoUrl}
+            controls
+            className="w-full h-full object-contain"
+          />
+        ) : null}
       </div>
 
       {/* 버튼 그룹 */}
