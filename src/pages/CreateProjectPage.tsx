@@ -13,7 +13,7 @@ import ImageEditStage from "../components/image&video/ImageEditStage";
 import VideoStage from "../components/image&video/VideoStage";
 import VideoMergeStage from "../components/video/VideoMergeStage";
 import { useCutScenes } from "../hooks/useCutScenes";
-import { Navigate, useLocation, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   getProjectPlans,
   getProjectPlanningSummary,
@@ -31,6 +31,7 @@ type EditingScene = {
 export default function CreateProjectPage() {
   const { projectId: projectIdParam } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const projectId = Number(projectIdParam);
   const routeState = location.state as { projectTitle?: string } | null;
@@ -156,6 +157,10 @@ export default function CreateProjectPage() {
   };
 
   const handleNext = () => {
+    if (activeStep === "video") {
+      void navigate(`/projects/${projectId}/complete`);
+      return;
+    }
     if (!canGoNext) return;
     setActiveStep(STEP_ORDER[currentStepIndex + 1]);
   };
