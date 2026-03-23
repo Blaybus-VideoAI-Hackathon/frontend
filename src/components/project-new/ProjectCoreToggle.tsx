@@ -100,7 +100,7 @@ export default function ProjectCoreToggle({
     ];
   }, [summary]);
 
-  const storylineText = summary?.storyline || "-";
+  const storylineText = summary?.storyLine || "-";
 
   return (
     <section className="w-full rounded-lg bg-gray-900 p-5">

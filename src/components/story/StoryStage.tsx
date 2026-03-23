@@ -1,11 +1,14 @@
 import { useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
-import { createPlan, type Plan } from "../../api/planApi";
+import {
+  generateProjectPlanning,
+  type GeneratePlanningResult,
+} from "../../api/planApi";
 
 export default function StoryStage({
   onSuccess,
 }: {
-  onSuccess?: (plans: Plan[]) => void;
+  onSuccess?: (result: GeneratePlanningResult) => void;
 }) {
   const { projectId } = useParams<{ projectId: string }>();
   const [idea, setIdea] = useState<string>("");
@@ -17,8 +20,29 @@ export default function StoryStage({
     setIsLoading(true);
     setError(null);
     try {
-      const result = await createPlan({ projectId, userPrompt: idea });
-      onSuccess?.(result.data.plans);
+      const result = await generateProjectPlanning({
+        projectId,
+        userPrompt: idea,
+      });
+
+      console.log("기획생성 결과:", result);
+      console.log("projectId:", projectId);
+      console.log("plans length:", result.data?.plans?.length);
+      console.log("selectedPlanId:", result.data?.selectedPlanId);
+      console.log("success:", result.success);
+
+      if (!result.success) {
+        throw new Error(result.message || "기획 생성 실패");
+      }
+
+      if (
+        !result.data ||
+        !result.data.plans ||
+        result.data.plans.length === 0
+      ) {
+        throw new Error("생성된 기획안이 없습니다.");
+      }
+      onSuccess?.(result.data);
     } catch {
       setError("기획 생성에 실패했습니다. 다시 시도해 주세요.");
     } finally {
@@ -27,7 +51,7 @@ export default function StoryStage({
   };
 
   return (
-    <section className="flex flex-1 flex-col items-center rounded-2xl bg-[#17181C] px-6 py-10">
+    <section className="flex flex-1 flex-col items-center rounded-2xl bg-[#17181C] px-6 py-30">
       {/* Headline */}
       <h1 className="mb-2.5 text-center text-[28px] font-bold tracking-tight text-white!">
         당신의 이야기를 들려주세요.
@@ -37,11 +61,8 @@ export default function StoryStage({
         장면을 만들고 어떤 세계를 펼칠지, 지금 상상의 문을 열어보세요.
       </p>
 
-      {/* Empty space (formerly image upload) */}
-      <div className="mb-4 w-full flex-1 rounded-2xl border border-white/6 bg-[#161618]" />
-
       {/* Idea Textarea */}
-      <div className="relative w-full rounded-2xl border border-white/6 bg-[#161618] px-5 pb-4 pt-5">
+      <div className="relative mt-30 w-full rounded-2xl border border-white/6 bg-[#161618] px-5 pb-4 pt-5">
         <textarea
           value={idea}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>

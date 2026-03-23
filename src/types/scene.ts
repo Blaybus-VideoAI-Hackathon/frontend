@@ -40,10 +40,21 @@ export type SceneDesign = {
   updatedAt: string;
 };
 
+export type GenerateScenesRequest = {
+  selectedPlanId: number;
+};
+
+export type GeneratedSceneItem = {
+  id: number;
+  sceneOrder: number;
+  summary: string;
+  status: string;
+};
+
 export type GenerateScenesResponse = {
   success: boolean;
   message: string;
-  data: Scene[];
+  data: GeneratedSceneItem[];
 };
 
 export type GetScenesResponse = {
@@ -93,4 +104,16 @@ export type GetSceneImagesResponse = {
   success: boolean;
   message: string;
   data: SceneImageItem[];
+};
+
+export type GenerateScenePromptResponseData = {
+  sceneId: number;
+  imagePrompt: string;
+  videoPrompt: string;
+};
+
+export type GenerateScenePromptResponse = {
+  success: boolean;
+  message: string;
+  data: GenerateScenePromptResponseData;
 };

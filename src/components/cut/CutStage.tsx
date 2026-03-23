@@ -8,6 +8,7 @@ type CutStageProps = {
   selectedSceneId: number | null;
   selectedSceneNumber: number;
   loading: boolean;
+  isGeneratingPrompts: boolean;
   error: string | null;
   isDeleting: boolean;
   regeneratingSceneId: number | null;
@@ -70,6 +71,7 @@ export default function CutStage({
   selectedSceneId,
   selectedSceneNumber,
   loading,
+  isGeneratingPrompts,
   error,
   isDeleting,
   regeneratingSceneId,
@@ -112,19 +114,27 @@ export default function CutStage({
           onRemoveScene={(sceneId) => {
             onDeleteScene(sceneId);
           }}
-          removeDisabled={isDeleting || regeneratingSceneId !== null}
+          removeDisabled={isDeleting || regeneratingSceneId !== null || isGeneratingPrompts}
         />
       </div>
 
-      <SceneDetailBox
-        sceneNumber={selectedSceneNumber}
-        title={selectedScene.title}
-        details={selectedScene.details}
-        isRegenerating={regeneratingSceneId === selectedScene.id}
-        onRegenerateScene={() => {
-          onRegenerateScene(selectedScene.id);
-        }}
-      />
+      {isGeneratingPrompts ? (
+        <div className="flex min-h-150 items-center justify-center rounded-lg bg-gray-900">
+          <div className="text-[18px] text-[rgba(255,255,255,0.72)]">
+            이미지/영상 프롬프트를 생성 중입니다...
+          </div>
+        </div>
+      ) : (
+        <SceneDetailBox
+          sceneNumber={selectedSceneNumber}
+          title={selectedScene.title}
+          details={selectedScene.details}
+          isRegenerating={regeneratingSceneId === selectedScene.id}
+          onRegenerateScene={() => {
+            onRegenerateScene(selectedScene.id);
+          }}
+        />
+      )}
     </section>
   );
 }

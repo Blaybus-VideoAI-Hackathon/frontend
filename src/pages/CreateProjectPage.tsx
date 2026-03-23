@@ -4,7 +4,7 @@ import ProjectCoreToggle from "../components/project-new/ProjectCoreToggle";
 import StepNavigation from "../components/project-new/StepNavigation";
 import StoryStage from "../components/story/StoryStage";
 import StoryPlanPage from "./StoryPlanPage";
-import { type Plan } from "../api/planApi";
+import { type GeneratedPlanItem } from "../api/planApi";
 import { STEP_ORDER, type TabId } from "../constants/step";
 import ImageStage from "../components/image&video/ImageStage";
 import CutStage from "../components/cut/CutStage";
@@ -13,7 +13,12 @@ import ImageEditStage from "../components/image&video/ImageEditStage";
 import VideoStage from "../components/image&video/VideoStage";
 import VideoMergeStage from "../components/video/VideoMergeStage";
 import { useCutScenes } from "../hooks/useCutScenes";
-import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import {
   getProjectPlans,
   getProjectPlanningSummary,
@@ -39,7 +44,8 @@ export default function CreateProjectPage() {
 
   const [activeStep, setActiveStep] = useState<TabId>("story");
   const [storySubStep, setStorySubStep] = useState<"input" | "plan">("input");
-  const [storyPlans, setStoryPlans] = useState<Plan[]>([]);
+  const [storyPlans, setStoryPlans] = useState<GeneratedPlanItem[]>([]);
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [editingScene, setEditingScene] = useState<EditingScene>(null);
 
   const [hasStoryPlans, setHasStoryPlans] = useState(false);
@@ -61,6 +67,7 @@ export default function CreateProjectPage() {
     selectedSceneId,
     selectedSceneNumber,
     loading,
+    isGeneratingPrompts,
     error,
     isDeleting,
     regeneratingSceneId,
@@ -71,6 +78,7 @@ export default function CreateProjectPage() {
   } = useCutScenes({
     projectId,
     enabled: isValidProjectId && isCutStage,
+    selectedPlanId: selectedPlanId ?? planningSummary?.selectedPlanId ?? null,
   });
 
   useEffect(() => {
@@ -181,14 +189,17 @@ export default function CreateProjectPage() {
             <StoryPlanPage
               plans={storyPlans}
               onPrev={() => setStorySubStep("input")}
-              onNext={handleNext}
+              onNext={(planId) => {
+                setSelectedPlanId(planId);
+                handleNext();
+              }}
             />
           );
         }
         return (
           <StoryStage
-            onSuccess={(plans) => {
-              setStoryPlans(plans);
+            onSuccess={(result) => {
+              setStoryPlans(result.plans);
               setStorySubStep("plan");
             }}
           />
@@ -257,6 +268,7 @@ export default function CreateProjectPage() {
                 selectedSceneId={selectedSceneId}
                 selectedSceneNumber={selectedSceneNumber}
                 loading={loading}
+                isGeneratingPrompts={isGeneratingPrompts}
                 error={error}
                 isDeleting={isDeleting}
                 regeneratingSceneId={regeneratingSceneId}

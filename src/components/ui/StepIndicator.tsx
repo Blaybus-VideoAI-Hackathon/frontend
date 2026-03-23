@@ -17,7 +17,7 @@ export default function StepIndicator({
 
   return (
     <div className="flex items-start w-full py-6">
-      {steps.map((step, index) => {
+      {steps.map((_, index) => {
         const isDone = index < currentStep;
         const isActive = index === currentStep;
 
@@ -31,8 +31,12 @@ export default function StepIndicator({
               <div
                 className={`absolute top-4 left-1/2 w-full h-px transition-colors duration-300 ${
                   isDone
-                    ? isDark ? "bg-indigo-500" : "bg-green-400"
-                    : isDark ? "bg-white/10" : "bg-gray-200"
+                    ? isDark
+                      ? "bg-indigo-500"
+                      : "bg-green-400"
+                    : isDark
+                      ? "bg-white/10"
+                      : "bg-gray-200"
                 }`}
               />
             )}
@@ -55,7 +59,6 @@ export default function StepIndicator({
             >
               {isDone ? "✓" : index + 1}
             </div>
-
           </div>
         );
       })}
