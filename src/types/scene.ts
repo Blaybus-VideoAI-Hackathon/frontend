@@ -63,6 +63,16 @@ export type GetScenesResponse = {
   data: Scene[];
 };
 
+export type GenerateSceneDesignRequest = {
+  designRequest: string;
+};
+
+export type GenerateSceneDesignResponse = {
+  success: boolean;
+  message: string;
+  data: Scene;
+};
+
 export type GetSceneDesignResponse = {
   success: boolean;
   message: string;

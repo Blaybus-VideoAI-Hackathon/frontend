@@ -34,7 +34,6 @@ type UseVideoScenesParams = {
 
 type GenerateVideoParams = {
   sceneId: number;
-  duration: 3 | 4 | 5;
 };
 
 function getSceneTitle(scene: Scene) {
@@ -286,7 +285,6 @@ export function useVideoScenes({
         await generateSceneVideo({
           projectId,
           sceneId: firstScene.id,
-          duration: 3,
         });
 
         await refreshVideos(sceneBases);
@@ -304,7 +302,7 @@ export function useVideoScenes({
   }, [enabled, items, loading, projectId, refreshVideos, sceneBases]);
 
   const submitGenerate = useCallback(
-    async ({ sceneId, duration }: GenerateVideoParams) => {
+    async ({ sceneId }: GenerateVideoParams) => {
       const target = items.find((item) => item.id === sceneId);
       if (!target) return;
 
@@ -326,7 +324,6 @@ export function useVideoScenes({
         await generateSceneVideo({
           projectId,
           sceneId,
-          duration,
         });
 
         await refreshVideos(sceneBases);

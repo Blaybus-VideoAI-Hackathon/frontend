@@ -68,6 +68,7 @@ export default function CreateProjectPage() {
     selectedSceneNumber,
     loading,
     isGeneratingPrompts,
+    generationStatusMessage,
     error,
     isDeleting,
     regeneratingSceneId,
@@ -269,6 +270,7 @@ export default function CreateProjectPage() {
                 selectedSceneNumber={selectedSceneNumber}
                 loading={loading}
                 isGeneratingPrompts={isGeneratingPrompts}
+                generationStatusMessage={generationStatusMessage}
                 error={error}
                 isDeleting={isDeleting}
                 regeneratingSceneId={regeneratingSceneId}
