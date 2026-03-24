@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { editSceneImageWithAi } from "../../api/imageApi";
 import { getSceneImages } from "../../api/sceneApi";
 import type { SceneImageItem } from "../../types/scene";
+import { downloadImageFromUrl } from "../../utils/downloadImage";
 
 type ImageEditStageProps = {
   projectId: number;
@@ -15,6 +16,10 @@ type ImageEditStageProps = {
   onCancelEdit?: () => void;
   onCompleteEdit?: () => void;
 };
+
+function pickFirstImage(images: SceneImageItem[]) {
+  return images.length > 0 ? [images[0]] : [];
+}
 
 export default function ImageEditStage({
   projectId,
@@ -31,16 +36,33 @@ export default function ImageEditStage({
   const [canvasKey, setCanvasKey] = useState(0);
   const [isAiSubmitting, setIsAiSubmitting] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     getSceneImages({ projectId, sceneId })
-      .then((res) => setImages(res.data))
+      .then((res) => {
+        const firstOnly = pickFirstImage(res.data ?? []);
+        setImages(firstOnly);
+
+        if (firstOnly[0]) {
+          const src = firstOnly[0].editedImageUrl || firstOnly[0].imageUrl;
+          setSelectedImageId(firstOnly[0].id);
+          setEditedImageSrc(src);
+        }
+      })
       .catch(console.error);
   }, [projectId, sceneId]);
 
   const refreshImages = async () => {
     const res = await getSceneImages({ projectId, sceneId });
-    setImages(res.data);
+    const firstOnly = pickFirstImage(res.data ?? []);
+    setImages(firstOnly);
+
+    if (firstOnly[0]) {
+      const src = firstOnly[0].editedImageUrl || firstOnly[0].imageUrl;
+      setSelectedImageId(firstOnly[0].id);
+      setEditedImageSrc(src);
+    }
   };
 
   const handleSelectImage = (image: SceneImageItem) => {
@@ -78,6 +100,23 @@ export default function ImageEditStage({
     }
   };
 
+  const handleDownload = async () => {
+    if (!editedImageSrc || isDownloading) return;
+
+    try {
+      setIsDownloading(true);
+      await downloadImageFromUrl(
+        editedImageSrc,
+        `scene-${sceneNumber}-${selectedImageId}.png`,
+      );
+    } catch (error) {
+      console.error(error);
+      alert("이미지 다운로드에 실패했습니다.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <section className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_480px]">
       <div className="flex min-w-0 flex-col">
@@ -88,7 +127,7 @@ export default function ImageEditStage({
           imageSrc={editedImageSrc}
           onImageChange={setEditedImageSrc}
           onDownload={() => {
-            console.log("이미지 다운로드");
+            void handleDownload();
           }}
         />
 

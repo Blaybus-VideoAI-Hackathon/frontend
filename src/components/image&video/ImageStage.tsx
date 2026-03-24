@@ -112,8 +112,8 @@ export default function ImageStage({
   if (!selectedScene || !selectedSceneId) {
     return (
       <section className="rounded-[8px] bg-gray-900 px-7 py-10 text-center">
-        <div className="text-[18px] text-[rgba(255,255,255,0.72)]">
-          생성된 컷씬이 없습니다.
+        <div className="text-[18px] text-[rgba(255,255,255,0.72)] whitespace-nowrap">
+          이미지 생성 중입니다. 잠시만 기다려 주세요...
         </div>
       </section>
     );

@@ -2,7 +2,7 @@ import StoryIcon from "../../assets/icons/story.svg?react";
 import CutIcon from "../../assets/icons/cut.svg?react";
 import ImageIcon from "../../assets/icons/image.svg?react";
 import VideoIcon from "../../assets/icons/video.svg?react";
-import FinishIcon from "../../assets/icons/finish.svg?react";
+// import FinishIcon from "../../assets/icons/finish.svg?react";
 import Line from "../../assets/line.svg";
 import type { TabId } from "../../constants/step";
 
@@ -15,7 +15,7 @@ const TABS: {
   { id: "cut", label: "컷 설계", Icon: CutIcon },
   { id: "image", label: "이미지 생성", Icon: ImageIcon },
   { id: "video", label: "동영상 생성", Icon: VideoIcon },
-  { id: "finish", label: "동영상 병합", Icon: FinishIcon },
+  // { id: "finish", label: "동영상 병합", Icon: FinishIcon },
 ];
 
 type StepTabsProps = {
