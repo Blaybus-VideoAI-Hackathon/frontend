@@ -48,23 +48,19 @@ function ImageHistoryCard({
       }`}
     >
       {src ? (
-        <img
-          src={src}
-          alt={label}
-          className="h-40 w-full object-cover"
-        />
+        <img src={src} alt={label} className="h-50 w-full object-cover" />
       ) : (
         <div className="flex h-40 w-full items-center justify-center bg-[rgba(255,255,255,0.06)] text-[13px] text-[rgba(255,255,255,0.36)]">
           이미지 없음
         </div>
       )}
-      <div
+      {/* <div
         className={`px-3 py-2 text-[13px] font-medium ${
           isSelected ? "text-[#A89CFF]" : "text-[rgba(255,255,255,0.56)]"
         }`}
       >
         {label}
-      </div>
+      </div> */}
     </button>
   );
 }
@@ -110,13 +106,13 @@ export default function AiChatBox({
           </div>
         ))}
 
-        {pendingMessage && (
-          <UserRequestBubble text={pendingMessage} />
-        )}
+        {pendingMessage && <UserRequestBubble text={pendingMessage} />}
 
         {isSubmitting && (
           <div className="flex items-center gap-2 text-[13px] text-[rgba(255,255,255,0.48)]">
-            <span className="animate-pulse">AI가 이미지를 수정하고 있습니다...</span>
+            <span className="animate-pulse">
+              AI가 이미지를 수정하고 있습니다...
+            </span>
           </div>
         )}
 

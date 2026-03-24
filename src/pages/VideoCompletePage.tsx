@@ -3,39 +3,81 @@ import { useParams } from "react-router-dom";
 import Button from "../components/ui/Button";
 import { mergeProjectVideos, getFinalVideo } from "../api/videoApi";
 
+const POLLING_INTERVAL = 3000;
+const MAX_POLLING_COUNT = 20;
+
 export default function VideoCompletePage() {
   const { projectId } = useParams<{ projectId: string }>();
+  const numericProjectId = Number(projectId);
+  const isValidProjectId =
+    Number.isFinite(numericProjectId) && numericProjectId > 0;
   const [storyOpen, setStoryOpen] = useState(true);
   const [finalVideoUrl, setFinalVideoUrl] = useState<string | null>(null);
-  const [status, setStatus] = useState<"merging" | "polling" | "done" | "error">("merging");
+  const [status, setStatus] = useState<
+    "merging" | "polling" | "done" | "error"
+  >("merging");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!projectId) return;
-    const id = Number(projectId);
+    if (!isValidProjectId) return;
+
+    let cancelled = false;
+
+    const sleep = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
 
     async function mergeAndFetch() {
       try {
+        setErrorMessage(null);
+        setFinalVideoUrl(null);
+
         setStatus("merging");
-        await mergeProjectVideos(id);
+        await mergeProjectVideos(numericProjectId);
 
         setStatus("polling");
-        const finalRes = await getFinalVideo(id);
-        if (finalRes.data?.finalVideoUrl) {
-          setFinalVideoUrl(finalRes.data.finalVideoUrl);
-          setStatus("done");
-        } else {
-          setErrorMessage("최종 영상 URL을 가져올 수 없습니다.");
+
+        for (let i = 0; i < MAX_POLLING_COUNT; i += 1) {
+          if (cancelled) return;
+
+          try {
+            const finalRes = await getFinalVideo(numericProjectId);
+            const url = finalRes.data?.finalVideoUrl;
+
+            if (url) {
+              setFinalVideoUrl(url);
+              setStatus("done");
+              return;
+            }
+          } catch (error) {
+            console.error("최종 영상 조회 실패:", error);
+          }
+
+          await sleep(POLLING_INTERVAL);
+        }
+
+        if (!cancelled) {
+          setErrorMessage(
+            "최종 영상 생성이 지연되고 있습니다. 잠시 후 다시 확인해주세요.",
+          );
           setStatus("error");
         }
       } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : "오류가 발생했습니다.";
-        setErrorMessage(msg);
-        setStatus("error");
+        const msg =
+          e instanceof Error
+            ? e.message
+            : "최종 영상 생성 중 오류가 발생했습니다.";
+        if (!cancelled) {
+          setErrorMessage(msg);
+          setStatus("error");
+        }
       }
     }
 
-    mergeAndFetch();
+    void mergeAndFetch();
+
+    return () => {
+      cancelled = true;
+    };
   }, [projectId]);
 
   const storyText =
@@ -48,24 +90,44 @@ export default function VideoCompletePage() {
         🔥 드디어 당신만의 이야기가 완성되었어요 🔥
       </h1>
       <p className="text-gray-400 text-sm mb-8 text-center">
-        삼성하던 장면이 하나의 영상으로 탄생했습니다. 완성된 결과를 감상하고 공유해 보세요.
+        삼성하던 장면이 하나의 영상으로 탄생했습니다. 완성된 결과를 감상하고
+        공유해 보세요.
       </p>
 
       {/* 비디오 플레이어 */}
       <div className="relative w-full max-w-2xl aspect-video bg-gray-700 rounded-lg overflow-hidden mb-6">
         {status === "merging" || status === "polling" ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-            <svg className="w-10 h-10 text-white animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            <svg
+              className="w-10 h-10 text-white animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+              />
             </svg>
             <p className="text-white text-sm">
-              {status === "merging" ? "영상 병합 중..." : "최종 영상 불러오는 중..."}
+              {status === "merging"
+                ? "영상 병합 중..."
+                : "최종 영상 불러오는 중..."}
             </p>
           </div>
         ) : status === "error" ? (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-red-400 text-sm text-center px-4">{errorMessage}</p>
+            <p className="text-red-400 text-sm text-center px-4">
+              {errorMessage}
+            </p>
           </div>
         ) : finalVideoUrl ? (
           <video
@@ -78,8 +140,16 @@ export default function VideoCompletePage() {
 
       {/* 버튼 그룹 */}
       <div className="flex gap-3 mb-8 flex-wrap justify-center">
-<Button variant="secondary" size="md" className="gap-2">
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <Button variant="secondary" size="md" className="gap-2">
+          <svg
+            className="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <circle cx="18" cy="5" r="3" />
             <circle cx="6" cy="12" r="3" />
             <circle cx="18" cy="19" r="3" />
@@ -88,8 +158,20 @@ export default function VideoCompletePage() {
           </svg>
           영상 공유하기
         </Button>
-        <Button variant="ghost" size="md" className="gap-2 text-gray-300 hover:bg-gray-800">
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <Button
+          variant="ghost"
+          size="md"
+          className="gap-2 text-gray-300 hover:bg-gray-800"
+        >
+          <svg
+            className="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -105,11 +187,27 @@ export default function VideoCompletePage() {
         >
           <span>스토리 라인</span>
           {storyOpen ? (
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="18 15 12 9 6 15" />
             </svg>
           ) : (
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="6 9 12 15 18 9" />
             </svg>
           )}
