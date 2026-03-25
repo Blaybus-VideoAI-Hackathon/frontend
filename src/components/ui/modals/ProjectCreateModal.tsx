@@ -214,7 +214,6 @@ function Step3({
   );
 }
 
-// ─── 메인 Wizard 컴포넌트 ───────────────────────────────
 export default function ProjectCreateModal({
   onComplete,
 }: {
