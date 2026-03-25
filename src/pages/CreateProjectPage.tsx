@@ -231,7 +231,7 @@ export default function CreateProjectPage() {
     !isImageEditing && (!isStoryStage || (!plansLoading && hasStoryPlans));
 
   return (
-    <main className="min-h-screen bg-black px-8 py-10">
+    <main className="min-h-190 bg-black px-8 py-10">
       <div className="mx-auto flex flex-col gap-4">
         {!isImageEditing && (
           <>

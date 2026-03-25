@@ -51,18 +51,20 @@ export default function StoryStage({
   };
 
   return (
-    <section className="flex flex-1 flex-col items-center rounded-2xl bg-[#17181C] px-6 py-30">
+    <section className="flex flex-1 flex-col w-full justify-around items-center px-6 py-8">
       {/* Headline */}
-      <h1 className="mb-2.5 text-center text-[28px] font-bold tracking-tight text-white!">
-        당신의 이야기를 들려주세요.
-      </h1>
-      <p className="mb-8 text-center text-sm leading-relaxed text-gray-500">
-        떠오르는 작은 아이디어 하나만으로도 새로운 이야기가 시작됩니다. 어떤
-        장면을 만들고 어떤 세계를 펼칠지, 지금 상상의 문을 열어보세요.
-      </p>
+      <div className="flex flex-col mt-20">
+        <div className="text-center text-[28px] mb-2 font-bold tracking-tight text-white!">
+          당신의 이야기를 들려주세요.
+        </div>
+        <p className="text-center text-[16px] leading-relaxed text-gray-400">
+          떠오르는 작은 아이디어 하나만으로도 새로운 이야기가 시작됩니다. 어떤
+          장면을 만들고 어떤 세계를 펼칠지, 지금 상상의 문을 열어보세요.
+        </p>
+      </div>
 
       {/* Idea Textarea */}
-      <div className="relative mt-30 w-full rounded-2xl border border-white/6 bg-[#161618] px-5 pb-4 pt-5">
+      <div className="relative w-full rounded-2xl border border-white/6 bg-[#161618] px-5 pb-4 pt-5">
         <textarea
           value={idea}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
