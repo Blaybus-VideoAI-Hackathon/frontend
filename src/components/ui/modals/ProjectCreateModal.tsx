@@ -65,7 +65,7 @@ function Step1({
           onChange={(e) => setProjectName(e.target.value)}
           className="w-full bg-[#3a3a3f] border border-white/10 rounded-lg px-3 py-2
             text-sm text-white placeholder:text-white/25
-            focus:outline-none focus:border-purple-500 transition-colors"
+            focus:outline-none focus:border-[#5C4DFF] transition-colors"
         />
       </div>
 
@@ -80,7 +80,7 @@ function Step1({
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors
                 ${
                   aspectRatio === ratio
-                    ? "bg-purple-600 text-white"
+                    ? "bg-[#5C4DFF] text-white"
                     : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
                 }`}
             >
@@ -101,7 +101,7 @@ function Step1({
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors
                 ${
                   duration === d
-                    ? "bg-purple-600 text-white"
+                    ? "bg-[#5C4DFF] text-white"
                     : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
                 }`}
             >
@@ -137,7 +137,7 @@ function Step2({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-base font-semibold text-white">영상 스타일</h2>
+      <div className="text-[18px] font-semibold text-white">영상 스타일</div>
       <div className="flex flex-col gap-2">
         {VIDEO_STYLES.map((style) => (
           <button
@@ -146,7 +146,7 @@ function Step2({
             className={`w-full px-4 py-3 rounded-lg text-sm font-medium text-left transition-colors
               ${
                 selected === style
-                  ? "bg-purple-600 text-white"
+                  ? "bg-[#5C4DFF] text-white"
                   : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
               }`}
           >
@@ -184,7 +184,7 @@ function Step3({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-base font-semibold text-white">영상 목적</h2>
+      <div className="text-[18px] font-semibold text-white">영상 목적</div>
       <div className="flex flex-col gap-2">
         {VIDEO_PURPOSES.map((purpose) => (
           <button
@@ -193,7 +193,7 @@ function Step3({
             className={`w-full px-4 py-3 rounded-lg text-sm font-medium text-left transition-colors
               ${
                 selected === purpose
-                  ? "bg-purple-600 text-white"
+                  ? "bg-[#5C4DFF] text-white"
                   : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
               }`}
           >
@@ -202,7 +202,7 @@ function Step3({
         ))}
       </div>
       {error && <p className="text-sm text-red-400">{error}</p>}
-      <div className="flex justify-between mt-1">
+      <div className="flex justify-end gap-2 mt-1">
         <Button variant="secondary" onClick={onPrev} disabled={isLoading}>
           이전
         </Button>
@@ -272,7 +272,7 @@ export default function ProjectCreateModal({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full">
       <StepIndicator steps={STEPS} currentStep={step} variant="dark" />
 
       {step === 0 && (
