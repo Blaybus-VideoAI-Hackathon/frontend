@@ -1,15 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-// import { useModalStore } from "../../store/ModalStore";
-// import ProjectCreateModal from "./modals/ProjectCreateModal";
 import { axiosInstance } from "../../api/axiosInstance";
 
 interface Project {
-  id: number;
-  title: string;
-}
-
-interface Scene {
   id: number;
   title: string;
 }
@@ -95,11 +88,9 @@ const IconTrash = () => (
 export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  // const { open } = useModalStore();
 
   const [isOpen, setIsOpen] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [scenes, setScenes] = useState<Record<number, Scene[]>>({});
 
   // 현재 URL에서 projectId 추출
   const match = location.pathname.match(/\/projects\/(\d+)/);
@@ -125,70 +116,17 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
     void load();
   }, [location.pathname]);
 
-  // const fetchProjects = useCallback(async () => {
-  //   try {
-  //     const res = await axiosInstance.get<{ data: Project[] }>("/api/projects");
-  //     setProjects(res.data?.data ?? []);
-  //   } catch {
-  //     // 조회 실패 시 빈 목록 유지
-  //   }
-  // }, []);
-
-  // 씬 조회 — effect는 inline, 토글 핸들러용은 useCallback
-  useEffect(() => {
-    if (!currentProjectId) return;
-    const load = async () => {
-      try {
-        const res = await axiosInstance.get<{ data: Scene[] }>(
-          `/api/scenes/projects/${currentProjectId}/scenes`,
-        );
-        setScenes((prev) => ({
-          ...prev,
-          [currentProjectId]: res.data?.data ?? [],
-        }));
-      } catch {
-        setScenes((prev) => ({ ...prev, [currentProjectId]: [] }));
-      }
-    };
-    void load();
-  }, [currentProjectId]);
-
-  const fetchScenes = useCallback(async (projectId: number) => {
-    try {
-      const res = await axiosInstance.get<{ data: Scene[] }>(
-        `/api/scenes/projects/${projectId}/scenes`,
-      );
-      setScenes((prev) => ({ ...prev, [projectId]: res.data?.data ?? [] }));
-    } catch {
-      setScenes((prev) => ({ ...prev, [projectId]: [] }));
-    }
-  }, []);
-
   const handleToggleProject = (projectId: number) => {
     if (expandedProjectId === projectId) {
       setExpandedProjectId(null);
     } else {
       setExpandedProjectId(projectId);
-      void fetchScenes(projectId);
     }
     const project = projects.find((p) => p.id === projectId);
     navigate(`/projects/${projectId}`, {
       state: { projectTitle: project?.title },
     });
   };
-
-  // const handleCreateProject = () => {
-  //   open(
-  //     <ProjectCreateModal
-  //       onComplete={(project) => {
-  //         void fetchProjects();
-  //         navigate(`/projects/${project.id}`, {
-  //           state: { projectTitle: project.title },
-  //         });
-  //       }}
-  //     />,
-  //   );
-  // };
 
   const handleCreateProject = () => {
     navigate("/");
@@ -211,7 +149,7 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
 
   return (
     <aside
-      className={`flex flex-col h-screen bg-[#1e1e24] border-r border-white/8 shrink-0 transition-all duration-300 ${isOpen ? "w-55" : "w-14"}`}
+      className={`flex flex-col h-screen bg-[#1e1e24] border-r border-white/8 shrink-0 transition-all duration-300 ${isOpen ? "w-55" : "w-14"} whitespace-nowrap`}
     >
       {/* 햄버거 메뉴 */}
       <div className="px-4 pt-5 pb-3">
@@ -249,8 +187,6 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
           <div className="mt-3 flex-1 overflow-y-auto px-3 flex flex-col gap-0.5">
             {projects.map((project) => {
               const isActive = project.id === currentProjectId;
-              const isExpanded = expandedProjectId === project.id;
-              const projectScenes = scenes[project.id] ?? [];
 
               return (
                 <div key={project.id}>
@@ -258,10 +194,12 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
                     <div
                       onClick={() => handleToggleProject(project.id)}
                       className={`
-                        flex-1 text-left pl-[26px] pr-7 py-2 rounded-lg text-[13px] font-medium
+                        flex-1 text-left pl-4 pr-7 py-2 rounded-lg text-[13px] font-medium
                         transition-all duration-150 truncate cursor-pointer
                         ${
-                          isActive ? "bg-[#4c3f8a] text-white" : "text-white/55"
+                          isActive
+                            ? "bg-[#4c3f8a] text-white hover:bg-[#4c3f8a]"
+                            : "text-white/55 hover:bg-[#4c3f8a]/40"
                         }
                       `}
                     >
@@ -272,26 +210,12 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
                         e.stopPropagation();
                         void handleDeleteProject(project.id);
                       }}
-                      className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity text-white/40 hover:text-red-400"
+                      className="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-white/40 hover:text-red-400"
                       aria-label="프로젝트 삭제"
                     >
                       <IconTrash />
                     </button>
                   </div>
-
-                  {/* 씬 목록 */}
-                  {isExpanded && projectScenes.length > 0 && (
-                    <div className="ml-3 mt-0.5 flex flex-col gap-0.5">
-                      {projectScenes.map((scene) => (
-                        <div
-                          key={scene.id}
-                          className="px-3 py-1.5 text-[12px] text-white/40 truncate"
-                        >
-                          {scene.title}
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               );
             })}
