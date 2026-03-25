@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { mergeProjectVideos, getFinalVideo } from "../api/videoApi";
+import { getProjectPlanningSummary } from "../api/planApi1";
 
 const POLLING_INTERVAL = 3000;
 const MAX_POLLING_COUNT = 20;
@@ -19,10 +20,14 @@ export default function VideoCompletePage() {
   const isValidProjectId =
     Number.isFinite(numericProjectId) && numericProjectId > 0;
 
+  const playerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const progressBarRef = useRef<HTMLDivElement | null>(null);
 
   const [storyOpen, setStoryOpen] = useState(true);
+  const [storyText, setStoryText] = useState("");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   const [finalVideoUrl, setFinalVideoUrl] = useState<string | null>(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [currentClipTime, setCurrentClipTime] = useState(0);
@@ -47,6 +52,45 @@ export default function VideoCompletePage() {
     currentVideoIndex * SCENE_VIDEO_DURATION + currentClipTime;
   const progressPercent =
     totalDuration > 0 ? (totalCurrentTime / totalDuration) * 100 : 0;
+
+  useEffect(() => {
+    if (!isValidProjectId) return;
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const response = await getProjectPlanningSummary({
+          projectId: numericProjectId,
+        });
+
+        if (cancelled) return;
+        setStoryText(response.data?.storyLine ?? "");
+      } catch (error) {
+        console.error("스토리 라인 조회 실패:", error);
+        if (!cancelled) {
+          setStoryText("");
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isValidProjectId, numericProjectId]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const target = playerRef.current;
+      setIsFullscreen(document.fullscreenElement === target);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!isValidProjectId) return;
@@ -147,6 +191,29 @@ export default function VideoCompletePage() {
     }
   };
 
+  const handleEnterFullscreen = async () => {
+    const target = playerRef.current;
+    if (!target) return;
+
+    try {
+      if (target.requestFullscreen) {
+        await target.requestFullscreen();
+      }
+    } catch (error) {
+      console.error("전체화면 진입 실패:", error);
+    }
+  };
+
+  const handleExitFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      console.error("전체화면 종료 실패:", error);
+    }
+  };
+
   const handleEnded = () => {
     if (currentVideoIndex < videoUrls.length - 1) {
       setCurrentVideoIndex((prev) => prev + 1);
@@ -194,9 +261,6 @@ export default function VideoCompletePage() {
     });
   };
 
-  const storyText =
-    "황소만한 전마의 발자국 소리가 귀를 가득 채우는 가운데, 전쟁의 흔적을 이비밖 스나미의 다가오고 있었다. 냉혹한 진영공의 눈빛이 창두는 가득에 빛에 해처럼 상교소소 초원의 한가락에서 사 있고, 그 밖에는해는 거대한 희잡들을 훑기이며 마이하는 긴 전향의 전이라 나를 지 사람/ 사이에서는 높지작! 들지작? 성이다는나이나 산전인 의 오고, 그 담처 삶으로, 전혀 창자들이 간절의 끊으라 그의 이기를 기어이며 표면이 고걸 성공스를 불에 취기라고, 그 소현 이르오는 끊으들이 복도으로 몰를 들이 들을 걸었을 막이다는, 마그리마 태기의 인이 창전으로 흩은좌며 높다낮 복잡 좌피의 기세가 취히들을 이른다고, 전경의 마기 육의 직면 한을가서야 마유가 두 잡지 없이 이렇이하는 누른들이 두 개의 한 충동을 불속의 아오란 증류를 용이는 한다.";
-
   if (!isValidProjectId) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center px-4">
@@ -217,7 +281,14 @@ export default function VideoCompletePage() {
         보세요
       </p>
 
-      <div className="relative w-full max-w-2xl aspect-video bg-gray-700 rounded-lg overflow-hidden mb-6 mt-5">
+      <div
+        ref={playerRef}
+        className={`relative w-full max-w-2xl aspect-video bg-gray-700 overflow-hidden mb-6 mt-5 ${
+          isFullscreen
+            ? "h-screen w-screen max-w-none rounded-none"
+            : "rounded-lg"
+        }`}
+      >
         {status === "merging" || status === "polling" ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
             <svg
@@ -316,6 +387,52 @@ export default function VideoCompletePage() {
                     {formatTime(totalCurrentTime)} / {formatTime(totalDuration)}
                   </span>
                 </div>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isFullscreen) {
+                        void handleExitFullscreen();
+                      } else {
+                        void handleEnterFullscreen();
+                      }
+                    }}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                  >
+                    {isFullscreen ? (
+                      <svg
+                        className="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 15 4 20 4 16" />
+                        <line x1="4" y1="20" x2="8" y2="20" />
+                        <polyline points="15 9 20 4 16 4" />
+                        <line x1="20" y1="4" x2="20" y2="8" />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="15 3 21 3 21 9" />
+                        <polyline points="9 21 3 21 3 15" />
+                        <line x1="21" y1="3" x2="14" y2="10" />
+                        <line x1="3" y1="21" x2="10" y2="14" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -362,7 +479,7 @@ export default function VideoCompletePage() {
         </button>
         {storyOpen && (
           <div className="px-5 pb-5 text-gray-400 text-sm leading-relaxed">
-            {storyText}
+            {storyText || "스토리 라인이 없습니다."}
           </div>
         )}
       </div>
