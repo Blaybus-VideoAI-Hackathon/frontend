@@ -228,7 +228,9 @@ export default function CreateProjectPage() {
   }
 
   const shouldShowStepNavigation =
-    !isImageEditing && (!isStoryStage || (!plansLoading && hasStoryPlans));
+    !isImageEditing &&
+    storySubStep !== "plan" &&
+    (!isStoryStage || (!plansLoading && hasStoryPlans));
 
   return (
     <main className="min-h-190 bg-black px-8 py-10">

@@ -17,7 +17,7 @@ export default function SceneListBox({
   removeDisabled = false,
 }: SceneListBoxProps) {
   return (
-    <section className="h-full w-full rounded-[8px] bg-gray-900 px-6 py-5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
+    <section className="min-h-200 w-full rounded-[8px] bg-gray-900 px-6 py-5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
       <div className="mb-6 text-[18px] font-bold text-gray-100">
         컷 구성 (스토리 흐름)
       </div>

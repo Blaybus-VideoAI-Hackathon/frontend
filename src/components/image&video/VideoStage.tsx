@@ -34,7 +34,7 @@ export default function VideoStage({ projectId }: VideoStageProps) {
 
   if (loading && items.length === 0) {
     return (
-      <section className="flex h-[760px] items-center justify-center rounded-[8px] bg-gray-900">
+      <section className="flex min-h-190 items-center justify-center rounded-[8px] bg-gray-900">
         <div className="text-[16px] text-[rgba(255,255,255,0.7)]">
           영상 목록을 불러오는 중...
         </div>
@@ -44,7 +44,7 @@ export default function VideoStage({ projectId }: VideoStageProps) {
 
   if (!selectedScene && items.length === 0) {
     return (
-      <section className="flex h-[760px] flex-col items-center justify-center rounded-[8px] bg-gray-900 gap-4">
+      <section className="flex min-h-190 flex-col items-center justify-center rounded-[8px] bg-gray-900 gap-4">
         <div className="text-[16px] text-[rgba(255,255,255,0.7)]">
           표시할 씬이 없습니다.
         </div>

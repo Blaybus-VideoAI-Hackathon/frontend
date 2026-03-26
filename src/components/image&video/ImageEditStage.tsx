@@ -17,8 +17,29 @@ type ImageEditStageProps = {
   onCompleteEdit?: () => void;
 };
 
-function pickFirstImage(images: SceneImageItem[]) {
-  return images.length > 0 ? [images[0]] : [];
+function getDisplayImages(allImages: SceneImageItem[]): {
+  canvasImage: SceneImageItem | null;
+  chatImages: SceneImageItem[];
+} {
+  if (allImages.length === 0) return { canvasImage: null, chatImages: [] };
+
+  const minNumber = Math.min(...allImages.map((img) => img.imageNumber));
+  const maxNumber = Math.max(...allImages.map((img) => img.imageNumber));
+  const originalImage = allImages[0];
+
+  if (maxNumber === minNumber) {
+    return { canvasImage: originalImage, chatImages: [originalImage] };
+  }
+
+  const editedImages = allImages.filter((img) => img.imageNumber > minNumber);
+  const latestImage = editedImages.reduce((prev, curr) =>
+    curr.imageNumber > prev.imageNumber ? curr : prev,
+  );
+
+  return {
+    canvasImage: latestImage,
+    chatImages: [originalImage, ...editedImages],
+  };
 }
 
 export default function ImageEditStage({
@@ -30,7 +51,7 @@ export default function ImageEditStage({
   imageSrc,
   onCompleteEdit,
 }: ImageEditStageProps) {
-  const [images, setImages] = useState<SceneImageItem[]>([]);
+  const [allImages, setAllImages] = useState<SceneImageItem[]>([]);
   const [selectedImageId, setSelectedImageId] = useState(imageId);
   const [editedImageSrc, setEditedImageSrc] = useState(imageSrc);
   const [canvasKey, setCanvasKey] = useState(0);
@@ -38,15 +59,18 @@ export default function ImageEditStage({
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  const { chatImages } = getDisplayImages(allImages);
+
   useEffect(() => {
     getSceneImages({ projectId, sceneId })
       .then((res) => {
-        const firstOnly = pickFirstImage(res.data ?? []);
-        setImages(firstOnly);
+        const all = res.data ?? [];
+        setAllImages(all);
 
-        if (firstOnly[0]) {
-          const src = firstOnly[0].editedImageUrl || firstOnly[0].imageUrl;
-          setSelectedImageId(firstOnly[0].id);
+        const { canvasImage: initial } = getDisplayImages(all);
+        if (initial) {
+          const src = initial.editedImageUrl || initial.imageUrl;
+          setSelectedImageId(initial.id);
           setEditedImageSrc(src);
         }
       })
@@ -55,12 +79,13 @@ export default function ImageEditStage({
 
   const refreshImages = async () => {
     const res = await getSceneImages({ projectId, sceneId });
-    const firstOnly = pickFirstImage(res.data ?? []);
-    setImages(firstOnly);
+    const all = res.data ?? [];
+    setAllImages(all);
 
-    if (firstOnly[0]) {
-      const src = firstOnly[0].editedImageUrl || firstOnly[0].imageUrl;
-      setSelectedImageId(firstOnly[0].id);
+    const { canvasImage: latest } = getDisplayImages(all);
+    if (latest) {
+      const src = latest.editedImageUrl || latest.imageUrl;
+      setSelectedImageId(latest.id);
       setEditedImageSrc(src);
     }
   };
@@ -144,7 +169,7 @@ export default function ImageEditStage({
 
       <div className="min-w-0">
         <AiChatBox
-          images={images}
+          images={chatImages}
           selectedImageId={selectedImageId}
           onSelectImage={handleSelectImage}
           pendingMessage={pendingMessage}

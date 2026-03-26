@@ -32,7 +32,7 @@ function LoadingPanel() {
       </div>
 
       <div className="rounded-[8px] bg-gray-900 p-6">
-        <div className="flex h-[620px] items-center justify-center text-[18px] text-[rgba(255,255,255,0.72)]">
+        <div className="flex min-h-190 items-center justify-center text-[18px] text-[rgba(255,255,255,0.72)]">
           이미지 목록을 불러오는 중입니다...
         </div>
       </div>
@@ -111,7 +111,7 @@ export default function ImageStage({
 
   if (!selectedScene || !selectedSceneId) {
     return (
-      <section className="rounded-[8px] bg-gray-900 px-7 py-10 text-center">
+      <section className="flex items-center justify-center rounded-[8px] bg-gray-900 px-7 py-10 min-h-190">
         <div className="text-[18px] text-[rgba(255,255,255,0.72)] whitespace-nowrap">
           이미지 생성 중입니다. 잠시만 기다려 주세요...
         </div>

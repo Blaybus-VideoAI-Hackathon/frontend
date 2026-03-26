@@ -33,7 +33,7 @@ export default function StepTabs({ activeTab }: StepTabsProps) {
               aria-current={isActive ? "step" : undefined}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg border px-6 py-5 transition-colors ${
                 isActive
-                  ? "border-[#251bdf] bg-[rgba(79,70,233,0.4)] text-[#a49ff4]"
+                  ? "border-[#4F46E9] bg-[rgba(79,70,233,0.4)] text-[#a49ff4]"
                   : "border-[#3c3c3c] bg-[rgba(135,135,135,0.1)] text-[#3c3c3c]"
               }`}
             >

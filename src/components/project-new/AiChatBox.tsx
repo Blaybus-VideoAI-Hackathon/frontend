@@ -12,6 +12,12 @@ type AiChatBoxProps = {
   onSendMessage?: (message: string) => Promise<void> | void;
 };
 
+function extractUserRequest(prompt: string): string {
+  const marker = "수정 요청 반영: ";
+  const idx = prompt.indexOf(marker);
+  return idx !== -1 ? prompt.slice(idx + marker.length) : prompt;
+}
+
 function UserRequestBubble({ text }: { text: string }) {
   return (
     <div className="w-full rounded-[24px] rounded-br-[0px] border border-[#5C4DFF] bg-[rgba(92,77,255,0.42)] px-6 py-5">
@@ -96,7 +102,7 @@ export default function AiChatBox({
         {images.map((image) => (
           <div key={image.id} className="flex flex-col gap-4">
             {image.imageNumber > 1 && image.imagePrompt && (
-              <UserRequestBubble text={image.imagePrompt} />
+              <UserRequestBubble text={extractUserRequest(image.imagePrompt)} />
             )}
             <ImageHistoryCard
               image={image}

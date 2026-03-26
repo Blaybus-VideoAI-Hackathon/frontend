@@ -89,8 +89,9 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isOpen, setIsOpen] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
+
+  const [isHovering, setIsHovering] = useState(false);
 
   // 현재 URL에서 projectId 추출
   const match = location.pathname.match(/\/projects\/(\d+)/);
@@ -132,10 +133,6 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
     navigate("/");
   };
 
-  const handleProjectList = () => {
-    // 목록 클릭 시 이동 없음
-  };
-
   const handleDeleteProject = async (projectId: number) => {
     try {
       await axiosInstance.delete(`/api/projects/${projectId}`);
@@ -149,40 +146,60 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
 
   return (
     <aside
-      className={`flex flex-col h-screen bg-[#1e1e24] border-r border-white/8 shrink-0 transition-all duration-300 ${isOpen ? "w-55" : "w-14"} whitespace-nowrap`}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      className={`flex flex-col h-screen bg-[#1e1e24] border-r border-white/8 shrink-0 transition-all duration-300 ease-in-out ${isHovering ? "w-55" : "w-14"} whitespace-nowrap`}
     >
       {/* 햄버거 메뉴 */}
       <div className="px-4 pt-5 pb-3">
-        <button
-          onClick={() => setIsOpen((prev) => !prev)}
-          className="text-white/50 hover:text-white/80 transition-colors"
-          aria-label="메뉴"
-        >
+        <button className="text-white/50 hover:text-white/80 transition-colors">
           <IconMenu />
         </button>
       </div>
 
       {/* 네비게이션 + 프로젝트 목록 + 유저 프로필 */}
-      <nav className={`flex flex-col gap-1 mt-1 ${isOpen ? "px-3" : "px-2"}`}>
+      <nav
+        className={`flex flex-col gap-1 mt-1 ${isHovering ? "px-3" : "px-2"}`}
+      >
         <button
           onClick={handleCreateProject}
-          className={`flex items-center py-2 rounded-lg text-white/60 hover:text-white/90 hover:bg-white/5 transition-all duration-150 ${isOpen ? "gap-2.5 px-3 text-[13px] text-left" : "justify-center px-2"}`}
+          className={`flex items-center py-2 rounded-lg text-white/60 hover:text-white/90 hover:bg-white/5 transition-all duration-300 ${
+            isHovering ? "gap-1 px-3" : "justify-center px-2"
+          }`}
         >
           <IconPencil />
-          {isOpen && <span>프로젝트 생성</span>}
+
+          <span
+            className={`
+      whitespace-nowrap overflow-hidden
+      transition-all duration-300
+      ${isHovering ? "opacity-100 translate-x-0 w-auto ml-2" : "opacity-0 -translate-x-2 w-0"}
+    `}
+          >
+            프로젝트 생성
+          </span>
         </button>
 
         <button
-          onClick={handleProjectList}
-          className={`flex items-center py-2 rounded-lg text-white/60 transition-all duration-150 ${isOpen ? "gap-2.5 px-3 text-[13px] text-left" : "justify-center px-2"}`}
+          className={`flex items-center py-2 rounded-lg text-white/60 hover:text-white/90 hover:bg-white/5 transition-all duration-300 ${
+            isHovering ? "gap-1 px-3" : "justify-center px-2"
+          }`}
         >
           <IconFolder />
-          {isOpen && <span>프로젝트 목록</span>}
+          <span
+            className={`
+      whitespace-nowrap overflow-hidden
+      transition-all duration-300
+      ${isHovering ? "opacity-100 translate-x-0 w-auto ml-2" : "opacity-0 -translate-x-2 w-0"}
+    `}
+          >
+            프로젝트 목록
+          </span>
         </button>
       </nav>
 
       {/* 프로젝트 목록 (열렸을 때만) */}
-      {isOpen && (
+      {isHovering && (
         <>
           <div className="mt-3 flex-1 overflow-y-auto px-3 flex flex-col gap-0.5">
             {projects.map((project) => {
@@ -190,28 +207,37 @@ export default function Sidebar({ user = { name: "user 01" } }: SidebarProps) {
 
               return (
                 <div key={project.id}>
-                  <div className="group relative flex items-center">
-                    <div
-                      onClick={() => handleToggleProject(project.id)}
+                  <div
+                    onClick={() => handleToggleProject(project.id)}
+                    className={`
+      group flex items-center justify-between
+      pl-4 pr-3 py-2 rounded-lg text-[13px] font-medium
+      transition-all duration-300 cursor-pointer
+      ${
+        isActive
+          ? "bg-[#4c3f8a] text-white"
+          : "text-white/55 hover:bg-[#4c3f8a]/40"
+      }
+    `}
+                  >
+                    {/* 제목 */}
+                    <span
                       className={`
-                        flex-1 text-left pl-4 pr-7 py-2 rounded-lg text-[13px] font-medium
-                        transition-all duration-150 truncate cursor-pointer
-                        ${
-                          isActive
-                            ? "bg-[#4c3f8a] text-white hover:bg-[#4c3f8a]"
-                            : "text-white/55 hover:bg-[#4c3f8a]/40"
-                        }
-                      `}
+        truncate whitespace-nowrap overflow-hidden
+        transition-all duration-300
+        ${isHovering ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"}
+      `}
                     >
                       {project.title}
-                    </div>
+                    </span>
+
+                    {/* 삭제 버튼 */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         void handleDeleteProject(project.id);
                       }}
-                      className="absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-white/40 hover:text-red-400"
-                      aria-label="프로젝트 삭제"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-white/40 hover:text-red-400"
                     >
                       <IconTrash />
                     </button>

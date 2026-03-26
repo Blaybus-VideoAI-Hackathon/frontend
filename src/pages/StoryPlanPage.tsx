@@ -124,9 +124,9 @@ export default function StoryPlanPage({
   };
 
   return (
-    <div className="flex h-full flex-col bg-[#1a1a1f] p-6">
+    <div className="flex h-full flex-col p-6">
       {isLoading ? (
-        <div className="flex flex-1 items-center justify-center text-white/50">
+        <div className="flex flex-1 min-h-190 items-center justify-center text-white/50">
           기획안을 불러오는 중...
         </div>
       ) : (
@@ -138,52 +138,85 @@ export default function StoryPlanPage({
               <button
                 key={plan.id}
                 onClick={() => setSelectedId(plan.id)}
-                className={`flex-1 rounded-2xl border p-5 text-left transition-colors ${
+                className={[
+                  "flex min-h-[650px] flex-1 flex-col rounded-[8px] border p-6 text-left transition-all duration-200",
                   isSelected
-                    ? "border-[#7c5cbf] bg-[#3d2f6b]"
-                    : "border-transparent bg-[#2a2a2f] hover:border-[#7c5cbf]/40"
-                }`}
+                    ? "border-[#5C4DFF] bg-[#2A2466]"
+                    : "border-white/12 bg-[#3c3c3c]/10 hover:border-white/25",
+                ].join(" ")}
               >
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="text-base font-semibold text-white">
+                <div className="mb-5 flex items-center justify-between">
+                  <span className="text-[20px] font-semibold leading-none text-white">
                     {plan.title}
                   </span>
+
                   <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    className={[
+                      "rounded-[8px] border px-3 py-2 text-[16px] font-medium leading-none",
                       isSelected
-                        ? "bg-purple-600 text-white"
-                        : "border border-white/30 text-white/60"
-                    }`}
+                        ? "border-none bg-[#5C4DFF] text-white"
+                        : "border-white/20 bg-transparent text-white/70",
+                    ].join(" ")}
                   >
                     {plan.badge}
                   </span>
                 </div>
 
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <p className="mb-0.5 text-xs text-white/50">메인 캐릭터</p>
-                    <p className="text-sm text-white">{plan.mainCharacter}</p>
-                  </div>
-
-                  {plan.subCharacters.length > 0 && (
+                <div
+                  className={[
+                    "flex-1 rounded-[8px] border px-4 py-5",
+                    isSelected
+                      ? "border-white/8 bg-white/10"
+                      : "border-white/8 bg-white/10",
+                  ].join(" ")}
+                >
+                  <div className="space-y-6">
                     <div>
-                      <p className="mb-0.5 text-xs text-white/50">
-                        보조 캐릭터
+                      <p className="mb-1 text-[18px] font-semibold leading-none text-white">
+                        메인 캐릭터
                       </p>
-                      <p className="text-sm text-white">
-                        {plan.subCharacters.join(", ")}
+                      <p className="text-[16px] leading-relaxed text-white/70">
+                        {plan.mainCharacter || "-"}
                       </p>
                     </div>
-                  )}
 
-                  <div>
-                    <p className="mb-0.5 text-xs text-white/50">배경</p>
-                    <p className="text-sm text-white">{plan.background}</p>
-                  </div>
+                    {plan.subCharacters.length > 0 && (
+                      <div>
+                        <p className="mb-1 text-[18px] font-semibold leading-none text-white">
+                          보조 캐릭터
+                        </p>
+                        <p className="text-[16px] leading-relaxed text-white/70">
+                          {plan.subCharacters.join(", ")}
+                        </p>
+                      </div>
+                    )}
 
-                  <div>
-                    <p className="mb-0.5 text-xs text-white/50">스토리</p>
-                    <p className="text-sm text-white">{plan.story}</p>
+                    <div>
+                      <p className="mb-1 text-[18px] font-semibold leading-none text-white">
+                        배경
+                      </p>
+                      <p className="text-[16px] leading-relaxed text-white/70">
+                        {plan.background || "-"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="mb-1 text-[18px] font-semibold leading-none text-white">
+                        분위기
+                      </p>
+                      <p className="text-[16px] leading-relaxed text-white/70">
+                        {plan.atmosphere || "-"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="mb-1 text-[18px] font-semibold leading-none text-white">
+                        스토리
+                      </p>
+                      <p className="text-[16px] leading-relaxed text-white/70">
+                        {plan.story || "-"}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </button>
@@ -191,7 +224,6 @@ export default function StoryPlanPage({
           })}
         </div>
       )}
-
       {error && (
         <p className="mt-3 text-center text-sm text-red-400">{error}</p>
       )}

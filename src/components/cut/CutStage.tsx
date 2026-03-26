@@ -36,7 +36,7 @@ function LoadingPanel() {
         </div>
       </div>
 
-      <div className="flex min-h-[600px] items-center justify-center rounded-[8px] bg-gray-900">
+      <div className="flex min-h-190 items-center justify-center rounded-[8px] bg-gray-900">
         <div className="text-[18px] text-[rgba(255,255,255,0.72)]">
           컷씬 정보를 생성/조회 중입니다...
         </div>
@@ -123,7 +123,7 @@ export default function CutStage({
       </div>
 
       {isGeneratingPrompts ? (
-        <div className="flex min-h-150 items-center justify-center rounded-lg bg-gray-900">
+        <div className="flex min-h-190 items-center justify-center rounded-lg bg-gray-900">
           <div className="text-[18px] text-[rgba(255,255,255,0.72)]">
             {generationStatusMessage ??
               "이미지/영상 프롬프트를 생성 중입니다..."}
