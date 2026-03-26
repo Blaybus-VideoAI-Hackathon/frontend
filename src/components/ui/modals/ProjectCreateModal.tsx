@@ -8,24 +8,29 @@ import Button from "../Button";
 const ASPECT_RATIOS = ["9:16", "16:9", "1:1"] as const;
 const DURATIONS = ["15초", "20초", "25초", "30초"] as const;
 const VIDEO_STYLES = [
-  "애니메이션 스타일",
-  "사실적인 영화 스타일",
-  "일러스트 스타일",
-  "3D 애니메이션 스타일",
-  "미래적인 스타일",
+  { label: "시네마틱", value: "cinematic" },
+  { label: "리얼리즘", value: "realistic" },
+  { label: "애니메이션", value: "anime" },
+  { label: "3D 그래픽", value: "3D render" },
+  { label: "초현실", value: "surreal" },
+  {
+    label: "지브리",
+    value:
+      "ghibli style, soft lighting, warm colors, hand-drawn animation, peaceful atmosphere",
+  },
 ] as const;
 const VIDEO_PURPOSES = [
-  "스토리형",
-  "액션형",
-  "감성형",
-  "정보형",
-  "수묵 / 질감",
+  { label: "스토리형", value: "storytelling" },
+  { label: "액션형", value: "action" },
+  { label: "감정형", value: "emotional" },
+  { label: "정보형", value: "informational" },
+  { label: "숏폼 / 밈형", value: "short-form" },
 ] as const;
 
 type AspectRatio = (typeof ASPECT_RATIOS)[number];
 type Duration = (typeof DURATIONS)[number];
-type VideoStyle = (typeof VIDEO_STYLES)[number];
-type VideoPurpose = (typeof VIDEO_PURPOSES)[number];
+type VideoStyle = (typeof VIDEO_STYLES)[number]["value"];
+type VideoPurpose = (typeof VIDEO_PURPOSES)[number]["value"];
 
 const STEPS = [
   { label: "프로젝트\n설정" },
@@ -51,6 +56,8 @@ function Step1({
   setDuration: (v: Duration) => void;
   onNext: () => void;
 }) {
+  const isProjectNameEmpty = !projectName.trim();
+
   return (
     <div className="flex flex-col gap-5">
       {/* 프로젝트 이름 */}
@@ -63,7 +70,7 @@ function Step1({
           placeholder="프로젝트 이름을 입력해주세요."
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
-          className="w-full bg-[#3a3a3f] border border-white/10 rounded-lg px-3 py-2
+          className="w-full hover:bg-[#3a3a3f]/30 border border-white/10 rounded-lg px-3 py-2
             text-sm text-white placeholder:text-white/25
             focus:outline-none focus:border-[#5C4DFF] transition-colors"
         />
@@ -72,16 +79,16 @@ function Step1({
       {/* 영상 비율 */}
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium text-white/80">영상 비율</label>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mr-25.5">
           {ASPECT_RATIOS.map((ratio) => (
             <button
               key={ratio}
               onClick={() => setAspectRatio(ratio)}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors
+              className={`flex-1 py-3 rounded-lg text-sm font-medium transition-colors
                 ${
                   aspectRatio === ratio
-                    ? "bg-[#5C4DFF] text-white"
-                    : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
+                    ? "bg-[#4f46e9]/30 border border-[#4F46E9] text-white"
+                    : "border border-[#3C3C3C] text-white/50 hover:text-white/80 hover:bg-[#44444a]/30"
                 }`}
             >
               {ratio}
@@ -98,11 +105,11 @@ function Step1({
             <button
               key={d}
               onClick={() => setDuration(d)}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors
+              className={`flex-1 py-3 rounded-lg text-sm font-medium transition-colors
                 ${
                   duration === d
-                    ? "bg-[#5C4DFF] text-white"
-                    : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
+                    ? "bg-[#4f46e9]/30 border border-[#4F46E9] text-white"
+                    : "border border-[#3C3C3C] text-white/50 hover:text-white/80 hover:bg-[#44444a]/30"
                 }`}
             >
               {d}
@@ -112,10 +119,11 @@ function Step1({
       </div>
 
       <div className="flex justify-end gap-2 mt-1">
-        <Button variant="secondary" disabled>
-          이전
-        </Button>
-        <Button variant="primary" onClick={onNext}>
+        <Button
+          variant={isProjectNameEmpty ? "secondary" : "primary"}
+          onClick={onNext}
+          disabled={isProjectNameEmpty}
+        >
           다음
         </Button>
       </div>
@@ -141,16 +149,16 @@ function Step2({
       <div className="flex flex-col gap-2">
         {VIDEO_STYLES.map((style) => (
           <button
-            key={style}
-            onClick={() => setSelected(style)}
+            key={style.value}
+            onClick={() => setSelected(style.value)}
             className={`w-full px-4 py-3 rounded-lg text-sm font-medium text-left transition-colors
               ${
-                selected === style
-                  ? "bg-[#5C4DFF] text-white"
-                  : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
+                selected === style.value
+                  ? "bg-[#4f46e9]/30 border border-[#4F46E9] text-white"
+                  : "border border-[#3C3C3C] text-white/50 hover:text-white/80 hover:bg-[#44444a]/30"
               }`}
           >
-            {style}
+            {style.label}
           </button>
         ))}
       </div>
@@ -188,16 +196,16 @@ function Step3({
       <div className="flex flex-col gap-2">
         {VIDEO_PURPOSES.map((purpose) => (
           <button
-            key={purpose}
-            onClick={() => setSelected(purpose)}
+            key={purpose.value}
+            onClick={() => setSelected(purpose.value)}
             className={`w-full px-4 py-3 rounded-lg text-sm font-medium text-left transition-colors
               ${
-                selected === purpose
-                  ? "bg-[#5C4DFF] text-white"
-                  : "bg-[#3a3a3f] text-white/50 hover:text-white/80 hover:bg-[#44444a]"
+                selected === purpose.value
+                  ? "bg-[#4f46e9]/30 border border-[#4F46E9] text-white"
+                  : "border border-[#3C3C3C] text-white/50 hover:text-white/80 hover:bg-[#44444a]/30"
               }`}
           >
-            {purpose}
+            {purpose.label}
           </button>
         ))}
       </div>
@@ -230,10 +238,11 @@ export default function ProjectCreateModal({
   const [duration, setDuration] = useState<Duration>("15초");
 
   // Step 2 state
-  const [videoStyle, setVideoStyle] = useState<VideoStyle>("애니메이션 스타일");
+  const [videoStyle, setVideoStyle] = useState<VideoStyle>("cinematic");
 
   // Step 3 state
-  const [videoPurpose, setVideoPurpose] = useState<VideoPurpose>("스토리형");
+  const [videoPurpose, setVideoPurpose] =
+    useState<VideoPurpose>("storytelling");
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -271,7 +280,7 @@ export default function ProjectCreateModal({
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full gap-2">
       <StepIndicator steps={STEPS} currentStep={step} variant="dark" />
 
       {step === 0 && (

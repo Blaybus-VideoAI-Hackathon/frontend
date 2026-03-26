@@ -4,7 +4,7 @@ interface Step {
 
 interface StepIndicatorProps {
   steps: Step[];
-  currentStep: number; // 0-based index
+  currentStep: number;
   variant?: "light" | "dark";
 }
 
@@ -16,52 +16,59 @@ export default function StepIndicator({
   const isDark = variant === "dark";
 
   return (
-    <div className="flex items-start w-full py-6">
-      {steps.map((_, index) => {
-        const isDone = index < currentStep;
-        const isActive = index === currentStep;
+    <div className="w-full pb-6">
+      <div className="flex w-full items-center">
+        {steps.map((step, index) => {
+          const isDone = index < currentStep;
+          const isActive = index === currentStep;
+          const isLast = index === steps.length - 1;
 
-        return (
-          <div
-            key={index}
-            className="flex flex-col items-center flex-1 relative"
-          >
-            {/* 연결선 */}
-            {index < steps.length - 1 && (
-              <div
-                className={`absolute top-4 left-1/2 w-full h-px transition-colors duration-300 ${
-                  isDone
-                    ? isDark
-                      ? "bg-indigo-500"
-                      : "bg-green-400"
-                    : isDark
-                      ? "bg-white/10"
-                      : "bg-gray-200"
-                }`}
-              />
-            )}
-
-            {/* 원 */}
+          return (
             <div
-              className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border transition-all duration-300 ${
-                isDone
-                  ? isDark
-                    ? "bg-indigo-600 border-indigo-500 text-white"
-                    : "bg-green-50 border-green-400 text-green-600"
-                  : isActive
-                    ? isDark
-                      ? "bg-indigo-600 border-indigo-400 text-white ring-4 ring-indigo-500/25"
-                      : "bg-blue-50 border-blue-400 text-blue-600 ring-4 ring-blue-100"
-                    : isDark
-                      ? "bg-[#2a2a2f] border-white/15 text-white/30"
-                      : "bg-white border-gray-200 text-gray-400"
-              }`}
+              key={step.label}
+              className={`flex items-center ${isLast ? "" : "flex-1"}`}
             >
-              {isDone ? "✓" : index + 1}
+              {/* 원 + 라벨 */}
+              <div className="flex flex-col items-center">
+                <div
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm font-medium transition-all duration-300 ${
+                    isDone
+                      ? isDark
+                        ? "border-indigo-500 bg-indigo-600 text-white"
+                        : "border-green-400 bg-green-50 text-green-600"
+                      : isActive
+                        ? isDark
+                          ? "border-indigo-400 bg-indigo-600 text-white ring-4 ring-indigo-500/25"
+                          : "border-blue-400 bg-blue-50 text-blue-600 ring-4 ring-blue-100"
+                        : isDark
+                          ? "border-white/15 bg-[#2a2a2f] text-white/30"
+                          : "border-gray-200 bg-white text-gray-400"
+                  }`}
+                >
+                  {isDone ? "✓" : index + 1}
+                </div>
+              </div>
+
+              {/* 연결선 */}
+              {!isLast && (
+                <div className="mx-3 h-px flex-1">
+                  <div
+                    className={`h-full w-full transition-colors duration-300 ${
+                      isDone
+                        ? isDark
+                          ? "bg-indigo-500"
+                          : "bg-green-400"
+                        : isDark
+                          ? "bg-white/10"
+                          : "bg-gray-200"
+                    }`}
+                  />
+                </div>
+              )}
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

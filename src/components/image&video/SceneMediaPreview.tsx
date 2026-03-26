@@ -46,11 +46,7 @@ export default function SceneMediaPreview({
                 preload="metadata"
               />
             ) : (
-              <img
-                src={src}
-                alt={title}
-                className="block h-auto w-full object-cover"
-              />
+              <img src={src} alt={title} className="block h-auto w-full" />
             )}
 
             {mode === "video" && durationText && (
