@@ -29,7 +29,7 @@ export default function SceneMediaPreview({
   const canRetry = isDone || isFailed;
 
   return (
-    <section className="self-start w-full rounded-[8px] bg-gray-900 p-6">
+    <section className="min-h-188 self-start w-full rounded-[8px] bg-gray-900 p-6">
       <div className="mb-6 flex items-center gap-4">
         <SceneLabel sceneNumber={sceneNumber} selected />
         <div className="text-[25px] font-bold text-white">{title}</div>
@@ -58,7 +58,7 @@ export default function SceneMediaPreview({
         )}
 
         {isGenerating && (
-          <div className="flex h-[520px] w-full items-center justify-center">
+          <div className="flex h-[560px] w-full items-center justify-center">
             <div className="flex flex-col items-center gap-3">
               <img
                 src={GeneratingIcon}

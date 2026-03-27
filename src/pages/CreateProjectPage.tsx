@@ -229,7 +229,7 @@ export default function CreateProjectPage() {
 
   const shouldShowStepNavigation =
     !isImageEditing &&
-    storySubStep !== "plan" &&
+    !(isStoryStage && storySubStep === "plan") &&
     (!isStoryStage || (!plansLoading && hasStoryPlans));
 
   return (

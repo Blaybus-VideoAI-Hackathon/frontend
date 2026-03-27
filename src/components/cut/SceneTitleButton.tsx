@@ -61,8 +61,8 @@ export default function SceneTitleButton({
             alt="삭제"
             className={
               selected
-                ? "h-4 w-4 object-contain"
-                : "h-4 w-4 object-contain opacity-90"
+                ? "h-4 w-4 object-contain invert brightness-200"
+                : "h-4 w-4 object-contain"
             }
           />
         </span>

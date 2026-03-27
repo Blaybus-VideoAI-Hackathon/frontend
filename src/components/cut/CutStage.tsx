@@ -53,12 +53,12 @@ function ErrorPanel({
   onRetry: () => void;
 }) {
   return (
-    <section className="rounded-[8px] bg-gray-900 px-7 py-10 text-center">
+    <section className="flex flex-col items-center justify-center min-h-190 rounded-[8px] bg-gray-900 px-7 py-10 text-center">
       <div className="text-[18px] font-semibold text-white">{message}</div>
       <button
         type="button"
         onClick={onRetry}
-        className="mt-5 rounded-[8px] bg-[#5C4DFF] px-6 py-3 text-[16px] font-semibold text-white transition hover:bg-[#4f41ee]"
+        className="mt-4 rounded-[8px] bg-[#5C4DFF] px-6 py-3 text-[16px] font-semibold text-white transition hover:bg-[#4f41ee]"
       >
         다시 시도
       </button>
@@ -131,6 +131,7 @@ export default function CutStage({
         </div>
       ) : (
         <SceneDetailBox
+          key={selectedScene.id}
           sceneNumber={selectedSceneNumber}
           title={selectedScene.title}
           details={selectedScene.details}

@@ -5,7 +5,7 @@ import StepIndicator from "../StepIndicator";
 import Button from "../Button";
 
 // ─── 상수 ──────────────────────────────────────────────
-const ASPECT_RATIOS = ["9:16", "16:9", "1:1"] as const;
+const ASPECT_RATIOS = ["2:3", "16:9", "1:1"] as const;
 const DURATIONS = ["15초", "20초", "25초", "30초"] as const;
 const VIDEO_STYLES = [
   { label: "시네마틱", value: "cinematic" },
@@ -13,11 +13,11 @@ const VIDEO_STYLES = [
   { label: "애니메이션", value: "anime" },
   { label: "3D 그래픽", value: "3D render" },
   { label: "초현실", value: "surreal" },
-  {
-    label: "지브리",
-    value:
-      "ghibli style, soft lighting, warm colors, hand-drawn animation, peaceful atmosphere",
-  },
+  // {
+  //   label: "지브리",
+  //   value:
+  //     "ghibli style, soft lighting, warm colors, hand-drawn animation, peaceful atmosphere",
+  // },
 ] as const;
 const VIDEO_PURPOSES = [
   { label: "스토리형", value: "storytelling" },
@@ -234,7 +234,7 @@ export default function ProjectCreateModal({
 
   // Step 1 state
   const [projectName, setProjectName] = useState("");
-  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("9:16");
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("2:3");
   const [duration, setDuration] = useState<Duration>("15초");
 
   // Step 2 state
