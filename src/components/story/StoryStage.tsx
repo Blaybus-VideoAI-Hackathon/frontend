@@ -71,7 +71,7 @@ export default function StoryStage({
             setIdea(e.target.value)
           }
           placeholder="아이디어를 자유롭게 말해주세요."
-          className="w-full resize-none bg-transparent text-[15px] leading-relaxed text-[#e8e8e8] outline-none placeholder:text-gray-600"
+          className="w-full resize-none bg-transparent text-[18px] leading-relaxed text-[#e8e8e8] outline-none placeholder:text-gray-600"
           style={{ minHeight: 140 }}
         />
         <div className="flex justify-end">

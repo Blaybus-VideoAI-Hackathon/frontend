@@ -21,7 +21,7 @@ export default function ChatInputBox({
   };
 
   return (
-    <div className="rounded-[18px] border border-[rgba(255,255,255,0.24)] bg-transparent px-5 py-5">
+    <div className="rounded-[10px] border border-[rgba(255,255,255,0.24)] bg-transparent px-5 py-5">
       <div className="flex min-h-[112px] items-end justify-between gap-4">
         <textarea
           value={message}

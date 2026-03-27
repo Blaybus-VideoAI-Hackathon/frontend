@@ -33,14 +33,15 @@ function ChevronIcon({ isOpen }: { isOpen: boolean }) {
 
 function InfoList({ items }: { items: InfoItem[] }) {
   return (
-    <div className="space-y-1">
+    <div className="space-y-0.5 min-h-34">
       {items.map((item) => (
-        <div
-          key={item.label}
-          className="grid grid-cols-[140px_1fr] gap-2 text-[15px]"
-        >
-          <span className="font-semibold text-gray-400">{item.label}</span>
-          <span className="break-words text-gray-400">{item.value}</span>
+        <div key={item.label} className="grid grid-cols-[140px_1fr] gap-2">
+          <span className="font-semibold text-[18px] text-gray-400">
+            {item.label}
+          </span>
+          <span className="wrap-break-word text-[16px] text-gray-400">
+            {item.value}
+          </span>
         </div>
       ))}
     </div>
@@ -88,7 +89,7 @@ export default function ProjectCoreToggle({
         { label: "메인 캐릭터", value: "-" },
         { label: "보조 캐릭터", value: "-" },
         { label: "배경", value: "-" },
-        { label: "스토리 흐름", value: "-" },
+        { label: "스토리", value: "-" },
       ];
     }
 
@@ -96,7 +97,7 @@ export default function ProjectCoreToggle({
       { label: "메인 캐릭터", value: summary.mainCharacter || "-" },
       { label: "보조 캐릭터", value: joinSubCharacters(summary.subCharacters) },
       { label: "배경", value: summary.backgroundWorld || "-" },
-      { label: "스토리 흐름", value: summary.storyFlow || "-" },
+      { label: "스토리", value: summary.storyFlow || "-" },
     ];
   }, [summary]);
 
@@ -136,7 +137,7 @@ export default function ProjectCoreToggle({
                 <h3 className="mb-3 text-[17px] font-semibold text-gray-200">
                   기초설정
                 </h3>
-                <div className="rounded-[20px] border border-gray-800 p-4">
+                <div className="rounded-lg border border-gray-800 p-4">
                   <InfoList items={basicSettings} />
                 </div>
               </div>
@@ -145,13 +146,13 @@ export default function ProjectCoreToggle({
                 <h3 className="mb-3 text-[17px] font-semibold text-gray-200">
                   영상 시나리오
                 </h3>
-                <div className="rounded-[20px] border border-gray-800 p-4">
+                <div className="rounded-lg border border-gray-800 p-4">
                   <InfoList items={scenarioSettings} />
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 rounded-lg bg-gray-800 px-4 py-3">
+            <div className="mt-6 rounded-lg bg-gray-800 px-4 py-3">
               <button
                 type="button"
                 onClick={() => setIsStoryOpen((prev) => !prev)}
@@ -166,7 +167,7 @@ export default function ProjectCoreToggle({
               <div
                 className={`overflow-hidden transition-all duration-300 ${
                   isStoryOpen
-                    ? "max-h-[400px] opacity-100 pt-2"
+                    ? "max-h-[300px] opacity-100 pt-2"
                     : "max-h-0 opacity-0 pt-0"
                 }`}
               >

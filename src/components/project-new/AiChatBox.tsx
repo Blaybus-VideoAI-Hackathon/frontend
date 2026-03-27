@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import ChatInputBox from "./ChatInputBox";
 import type { SceneImageItem } from "../../types/scene";
+import aiIcon from "../../assets/icons/ai.svg";
 
 type AiChatBoxProps = {
   images?: SceneImageItem[];
@@ -93,9 +94,10 @@ export default function AiChatBox({
   };
 
   return (
-    <section className="flex h-full min-h-0 w-full flex-col rounded-[8px] bg-gray-900 p-6">
-      <div className="mb-8 text-[18px] font-bold text-gray-100">
-        AI 수정하기
+    <section className="flex h-full w-full flex-col rounded-[8px] bg-gray-900 p-6">
+      <div className="flex items-center gap-2.5 mb-8 text-[18px] font-bold text-gray-100">
+        <img src={aiIcon} className="h-5 w-5" />
+        <span>AI 수정하기</span>
       </div>
 
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto pr-1">
@@ -125,9 +127,9 @@ export default function AiChatBox({
         <div ref={bottomRef} />
       </div>
 
-      <div className="mt-4 text-[13px] text-[rgba(255,255,255,0.48)]">
-        {disabled ? "선택된 컷씬이 없습니다." : ""}
-      </div>
+      {/* <div className="mt-4 text-[13px] text-[rgba(255,255,255,0.48)]">
+        {disabled ? "컷씬이 없습니다." : ""}
+      </div> */}
 
       <div className="mt-3">
         <ChatInputBox onSend={handleSendMessage} />

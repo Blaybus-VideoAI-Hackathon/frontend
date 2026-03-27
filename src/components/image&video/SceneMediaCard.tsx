@@ -45,7 +45,7 @@ function StatusText({
     return (
       <div className="flex items-center gap-1 text-[14px] font-medium text-[rgba(255,255,255,0.68)] mr-3 whitespace-nowrap">
         생성 중
-        <img src={GeneratingIcon} alt="" className="h-4 w-4 object-contain" />
+        <img src={GeneratingIcon} alt="" className="h-4 w-4 object-contain animate-spin" />
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function SceneMediaCard({
                 <img
                   src={GeneratingIcon}
                   alt=""
-                  className="h-5 w-5 object-contain"
+                  className="h-5 w-5 object-contain animate-spin"
                 />
               </div>
             )}
